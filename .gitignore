@@ -1,0 +1,31 @@
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Swap the comments on the following lines if you don't wish to use zero-installs
+# Documentation here: https://yarnpkg.com/features/zero-installs
+#!.yarn/cache
+.pnp.*
+
+node_modules
+.env
+coverage
+coverage.json
+typechain
+typechain-types
+
+#Hardhat files
+cache
+artifacts
+
+#Sensetive stuff
+mnemonic.txt
+
+#OMG really?
+.DS_Store
+#Does it work?
+./*/.DS_Store
+./.*/DS_Store
