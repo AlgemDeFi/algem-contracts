@@ -5,6 +5,8 @@ import "@nomiclabs/hardhat-ethers";
 import "hardhat-deploy";
 import "./tasks/index";
 
+import '@typechain/hardhat'
+
 import * as fs from "fs";
 import { ethers } from "hardhat";
 
