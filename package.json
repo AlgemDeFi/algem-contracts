@@ -19,20 +19,19 @@
     "@types/node": ">=12.0.0",
     "chai": "^4.2.0",
     "ethers": "^5.6.9",
+    "ganache-cli": "^6.12.2",
     "hardhat": "^2.10.1",
     "hardhat-deploy": "^0.11.11",
     "hardhat-gas-reporter": "^1.0.8",
-    "solidity-coverage": "^0.7.21",
     "ts-node": ">=8.0.0",
     "typechain": "^8.1.0",
     "typescript": ">=4.5.0"
-  },
-  "dependencies": {
-    "@polkadot/api": "^8.12.2"
+    "@polkadot/api": "^8.12.2",
+    "csv-writer": "^1.6.0"
   },
   "scripts": {
     "compile": "hardhat compile",
-    "test": "echo \"TBD\"",
+    "test": "hardhat test --network astarLocal",
     "deploy": "echo \"TBD\"",
     "chain": "./astar-collator --dev"
   }
