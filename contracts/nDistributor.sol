@@ -150,11 +150,6 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
     // ------------------------------- Constructor
     // -------------------------------------------------------------------------------------------------------
 
-    // @notice prevents initialization of the implementation contract itself
-    constructor() {
-        _disableInitializers();
-    }
-
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         owner = msg.sender;

@@ -40,11 +40,6 @@ contract NASTR is
 
     using AddressUpgradeable for address;
 
-    // @notice prevents initialization of the implementation contract itself
-    constructor() {
-        _disableInitializers();
-    }
-
     // @notice      contract constructor
     // @param       [address] _distributor => DNT distributor contract address (will become the owner)
     function initialize(address _distributor) public initializer {

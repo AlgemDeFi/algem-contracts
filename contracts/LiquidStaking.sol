@@ -5,7 +5,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "./interfaces/DappsStaking.sol";
-import "./NDistributor.sol";
+import "./nDistributor.sol";
 import "./interfaces/IDNT.sol";
 import "./interfaces/ILpHandler.sol";
 
@@ -83,7 +83,7 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
     uint public minStakeAmount;
     uint public sum2unstake;
     bool public isUnstakes; // <== unused and will removed with next proxy update
-    uint public claimingTxLimit = 5;
+    uint public claimingTxLimit;
 
     event Staked(address indexed user, uint val);
     event Unstaked(address indexed user, uint amount, bool immediate);
@@ -99,11 +99,6 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
 
     using AddressUpgradeable for address payable;
     using AddressUpgradeable for address;
-
-    // @notice prevents initialization of the implementation contract itself
-    constructor() {
-        _disableInitializers();
-    }
 
     // ------------------ INIT
     // -----------------------
@@ -130,6 +125,8 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
         lastStaked = era;
         lastUnstaked = era;
         lastClaimed = era;
+        
+        claimingTxLimit = 5;
     }
 
     // ------------------ VIEWS

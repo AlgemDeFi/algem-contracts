@@ -26,6 +26,6 @@ task("giveMoney", "Give money from Alice dev account")
         const polkapi = await ApiPromise.create({ provider: wsProvider });
 
         const tx = polkapi.tx.balances.transfer(recepient, amount);
-        await tx.signAndSend(polkalice);
+        const txHash = await tx.signAndSend(polkalice);
         console.log("Given", amount.toString(), "to", taskArgs.to);
     });
