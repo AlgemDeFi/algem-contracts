@@ -5,9 +5,9 @@ Clone the source code, install dependencies.
 
 ```git clone https://github.com/AlgemDeFi/algem-contracts```
 
-```$cd ~/algem-contracts```
+```cd ~/algem-contracts```
 
-```$npm install```
+```npm install```
 
 # Astar local chain
 Get latest astar-collator [binary](https://github.com/AstarNetwork/Astar/releases)
@@ -22,7 +22,7 @@ Run ```npx hardhat %TASK_NAME%```
 * **registerDapp** register contract in DAPPS_STAKING module
 
 # Compile
-```$npx hardhat compile```
+```npx hardhat compile```
 
 # Deploy & setup
 ```npx hardhat run scripts/init.ts```
