@@ -24,11 +24,9 @@ Run ```npx hardhat %TASK_NAME%```
 # Compile
 ```$npx hardhat compile```
 
-# Deploy
+# Deploy & setup
 ```npx hardhat run scripts/init.ts```
 
-# Post-deploy routine
-```npx hardhat run scripts/init.ts```
 
 # Test
 ```npx hardhat test --network astarLocal```
