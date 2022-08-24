@@ -9,7 +9,14 @@ import "./nDistributor.sol";
 import "./interfaces/IDNT.sol";
 import "./interfaces/ILpHandler.sol";
 
-//shibuya: 0xD9E81aDADAd5f0a0B59b1a70e0b0118B85E2E2d3
+/* @notice Liquid staking implementation contract
+ *
+ * https://docs.algem.io/algem-protocol/liquid-staking
+ *
+ * Features:
+ * - Initializable
+ * - AccessControlUpgradeable
+ */
 contract LiquidStaking is Initializable, AccessControlUpgradeable {
     DappsStaking public constant DAPPS_STAKING =
         DappsStaking(0x0000000000000000000000000000000000005001);

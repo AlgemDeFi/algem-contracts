@@ -12,17 +12,18 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "./interfaces/INDistributor.sol";
 
 /*
- * @notice nALGM ERC20 DNT token contract
+ * @notice nASTR ERC20 DNT token contract
  *
  * https://docs.algem.io/dnts
  *
  * Features:
- * - AccessControl
- * - Mintable
- * - Burnable
- * - Pausable
- * - Permits (gasless allowance)
- * - Snapshots (ability to store shnapshots of balances that can be retrieved later)
+ * - Initializable 
+ * - ERC20Upgradeable
+ * - ERC20BurnableUpgradeable
+ * - ERC20SnapshotUpgradeable
+ * - ERC20PermitUpgradeable
+ * - PausableUpgradeable
+ * - AccessControlUpgradeable
  */
 
 contract NASTR is
