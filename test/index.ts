@@ -1,60 +1,96 @@
+import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
-import { evmToPlm } from "../scripts/utils";
-import { ApiPromise, Keyring, WsProvider } from "@polkadot/api";
-import { BigNumber } from "ethers";
-
-import distr from "./contracts/NDistributor";
-import dnt from "./contracts/DNT";
-import ls from "./contracts/LiquidStaking";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { run } from "hardhat";
+import { Contract } from "ethers";
 
-describe("Algem app", function () {
+const zero = ethers.constants.AddressZero;
+const parse = ethers.utils.parseEther;
+const wait = async(ms: number) => {
+    console.log("Waiting", ms, "ms")
+    await new Promise(f => setTimeout(f, ms));
+}
+
+describe("Algem App", function () {
+    let owner: SignerWithAddress,
+        someGuy1: SignerWithAddress,
+        someGuy2: SignerWithAddress,
+        someGuy3: SignerWithAddress;
+
+    let distr: Contract,
+        dnt: Contract,
+        ls: Contract;
+
     before(async function() {
-        //this.accounts = await ethers.getSigners();
-        //console.log(accs);
-        //this.accounts = accs;
+        [owner, someGuy1, someGuy2, someGuy3] = await ethers.getSigners();
+        await run("giveMoney", {to: owner.address, amount: "10000"});
+        await wait(4000);
+        await run("giveMoney", {to: someGuy1.address, amount: "10000"});
+        await wait(4000);
+        await run("giveMoney", {to: someGuy2.address, amount: "10000"});
+        await wait(4000);
+        await run("giveMoney", {to: someGuy3.address, amount: "10000"});
+        await wait(4000);
+    });
 
-        const wsProvider = new WsProvider('ws://localhost:9944')
-        const keyring = new Keyring({ type: 'sr25519' });
+    describe("Deploy contracts", function () {
+        it("Should deploy nDistributor", async () => {
+            const distrFactory = await ethers.getContractFactory("NDistributor");
+            distr = await upgrades.deployProxy(distrFactory);
+            await distr.deployed();
+            await distr.deployTransaction.wait();
+            (distr.address).should.not.equal(zero);
+        });
 
-        this.polkalice = keyring.addFromUri('//Alice', { name: 'Alice default' });
-        this.polkapi = await ApiPromise.create({ provider: wsProvider });
+        it("Should deploy dnt", async () => {
+            const dntFactory = await ethers.getContractFactory("NASTR");
+            dnt = await upgrades.deployProxy(dntFactory, [distr.address]);
+            await dnt.deployed();
+            await dnt.deployTransaction.wait();
+            dnt.address.should.not.equal(zero);
+        });
 
-        this.giveMoney = async (to: string, amount: BigNumber) => {
-            const recepient = evmToPlm(to);
-            const tx = this.polkapi.tx.balances.transfer(recepient, amount);
-            const txHash = await tx.signAndSend(this.polkalice);
-        }
-
-        this.registerDapp = async (app: string) => {
-            const tx = this.polkapi.tx.dappsStaking.register({ evm: app });
-            const txHash = await tx.signAndSend(this.polkalice);
-        }
-});
-
-    describe("NDistributor", distr.bind(this));
-    describe("DNT", dnt.bind(this));
-    describe("LiquidStaking", ls.bind(this));
-
-    describe("Environment", function () {
-        it("Should register LS proxy to dappsStaking", async function () {
-            (await this.registerDapp(this.ls.address)).should.satisfy;
+        it("Should deploy LiquidStaking", async () => {
+            const lsFactory = await ethers.getContractFactory("LiquidStaking");
+            ls = await upgrades.deployProxy(lsFactory, [
+                "nASTR", "LiquidStaking",
+                distr.address, dnt.address
+            ]);
+            await ls.deployed();
+            await ls.deployTransaction.wait();
+            ls.address.should.not.equal(zero);
         });
     });
 
-    describe("Stake", function () {
+    describe("Initial contract setup", function () {
+        describe("NDistributor", function () {
+            it("Should addUtility", async () => {
+                const tx = await distr.addUtility("LiquidStaking");
+                await tx.wait();
+                const utilID = await distr.utilityId("LiquidStaking");
+                const util = await distr.utilityDB(utilID);
+                util.isActive.should.be.equal(true);
+            });
+        });
 
+        it("Should register dapp in DAPPS_STAKING");
     });
 
-    describe("Unstake", function () {
+    describe("Admin functions", function () {
+        describe("nDistributor", function () {
 
+        });
+
+        describe("DNT", function () {
+
+        });
+
+        describe("LiquidStaking", function () {
+
+        });
     });
 
-    describe("Withdraw", function () {
-
-    });
-
-    describe("Liquidity", function () {
+    describe("Core functions", function () {
 
     });
 });

@@ -47,6 +47,10 @@ async function main() {
     await tx.wait();
     console.log("Added liquidstaking as manager");
     // It's sad buy Astar doesn't support easy verification methods :(
+    
+    tx = await distr.setLiquidStaking(ls.address);
+    await tx.wait();
+    console.log("Added liquidstaking via setLiquidStaking");
 }
 
 main().catch((error) => {
