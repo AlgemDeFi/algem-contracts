@@ -7,12 +7,14 @@ Clone the source code, install dependencies.
 
 ```cd ~/algem-contracts```
 
-```npm install```
+```yarn install```
 
 # Astar local chain
 Get latest astar-collator [binary](https://github.com/AstarNetwork/Astar/releases)
 
 To start dev node run
+```yarn chain```
+or
 ```./astar-collator --dev```
 
 ### Check out helper tasks!
@@ -29,5 +31,6 @@ Run ```npx hardhat %TASK_NAME%```
 
 
 # Test
+```yarn test```
+or
 ```npx hardhat test --network astarLocal```
-
