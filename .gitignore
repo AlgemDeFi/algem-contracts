@@ -16,6 +16,7 @@ coverage
 coverage.json
 typechain
 typechain-types
+astar-collator
 
 #Hardhat files
 cache
