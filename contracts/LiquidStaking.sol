@@ -5,9 +5,9 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "./interfaces/DappsStaking.sol";
-import "./nDistributor.sol";
+import "./NDistributor.sol";
 import "./interfaces/IDNT.sol";
-import "./interfaces/ILpHandler.sol";
+import "./interfaces/IPartnerHandler.sol";
 
 /* @notice Liquid staking implementation contract
  *
@@ -73,8 +73,8 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
     uint public lastUnstaked;
 
     // @notice handlers for work with LP tokens
-    mapping(address => bool) public isLpToken;
-    address[] public lpTokens;
+    mapping(address => bool) public isLpToken; // <== unused and will removed with next proxy update
+    address[] public lpTokens; // <== unused and will removed with next proxy update
 
     mapping(uint => uint) public eraRewards;
 
@@ -83,7 +83,7 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
     mapping(address => mapping(uint => uint)) public buffer;
     mapping(address => mapping(uint => uint[])) public usersShotsPerEra;
     mapping(address => uint) public totalUserRewards;
-    mapping(address => address) public lpHandlers;
+    mapping(address => address) public lpHandlers; // <== unused and will removed with next proxy update
 
     uint public eraShotsLimit;
     uint public lastClaimed;
@@ -92,6 +92,17 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
     bool public isUnstakes; // <== unused and will removed with next proxy update
     uint public claimingTxLimit;
 
+    uint8 public constant REVENUE_FEE = 9; // 9% fee on MANAGEMENT_FEE
+    uint8 public constant UNSTAKING_FEE = 1; // 1% fee on MANAGEMENT_FEE
+    uint8 public constant MANAGEMENT_FEE = 10; // 10% fee on staking rewards
+    uint8 public constant FEE_PRECISION = 10; // 10% fee on staking rewards
+
+    // to partners will be added handlers and adapters. All handlers will be removed in future
+    mapping(address => bool) public isPartner;
+    mapping(address => uint) public partnerIdx;
+    address[] public partners;
+    uint public partnersLimit;
+
     event Staked(address indexed user, uint val);
     event Unstaked(address indexed user, uint amount, bool immediate);
     event Withdrawn(address indexed user, uint val);
@@ -99,13 +110,33 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
     event UpdateError(string indexed reason);
 
     // events for events handle
-    event ClaimStakerError(uint indexed era);
+    event ClaimStakerError(uint indexed era, bytes indexed reason);
     event UnbondAndUnstakeError(uint indexed sum2unstake, uint indexed era, bytes indexed reason);
     event WithdrawUnbondedError(uint indexed _era, bytes indexed reason);
     event ClaimDappError(uint indexed amount, uint indexed era, bytes indexed reason);
+    event SetMinStakeAmount(address indexed sender, uint amount);
+    event SetEraShotsLimit(address indexed sender, uint limit);
+    event SetPartnersLimit(address indexed sender, uint value);
+    event SetClaimingTxLimit(address indexed sender, uint val);
+    event RemovePartner(address indexed sender, address indexed partner);
+    event AddPartner(address indexed sender, address indexed partner);
+    event WithdrawRevenue(uint amount);
+    event Synchronization(address indexed sender, uint indexed era);
+    event FillUnstaking(address indexed sender, uint value);
+    event FillRewardPool(address indexed sender, uint value);
+    event FillUnbonded(address indexed sender, uint value);
+    event ClaimDappSuccess(uint eraStakerReward, uint indexed _era);
+    event WithdrawUnbondedSuccess(uint indexed _era);
+    event UnbondAndUnstakeSuccess(uint indexed era, uint sum2unstake);
+    event ClaimStakerSuccess(uint indexed era, uint lastClaimed);
 
     using AddressUpgradeable for address payable;
     using AddressUpgradeable for address;
+
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
 
     // ------------------ INIT
     // -----------------------
@@ -122,6 +153,7 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
         _grantRole(MANAGER, msg.sender);
         setMinStakeAmount(100*10**18);
         setEraShotsLimit(15);
+        setPartnersLimit(15);
         withdrawBlock = DAPPS_STAKING.read_unbonding_period();
         DNTname = _DNTname;
         utilName = _utilName;
@@ -132,8 +164,15 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
         lastStaked = era;
         lastUnstaked = era;
         lastClaimed = era;
-        
+
         claimingTxLimit = 5;
+    }
+
+    // @notice Needed for upgrade contract, by setting the initial values to added variables
+    function initialize2() external onlyRole(MANAGER) {
+        setClaimingTxLimit(5);
+        setPartnersLimit(15);
+        DAPPS_STAKING.set_reward_destination(DappsStaking.RewardDestination(0)); //set rewards destionation
     }
 
     // ------------------ VIEWS
@@ -153,53 +192,67 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
         return withdrawals[msg.sender];
     }
 
-    // @notice add lp token address and handler to calc nTokens share for users
-    function addPartner(address _lp, address _handler) external onlyRole(MANAGER) {
-        require(!isLpToken[_lp], "Allready added");
-        isLpToken[_lp] = true;
-        lpTokens.push(_lp);
-        lpHandlers[_lp] = _handler;
+    // @notice add partner address to calc nTokens share for users
+    // @param _partner partner's address
+    function addPartner(address _partner) external onlyRole(MANAGER) {
+        require(!isPartner[_partner], "Already added");
+        require(_partner != address(0), "Zero address alarm");
+        require(partners.length <= partnersLimit, "Partners limit reached");
+        isPartner[_partner] = true;
+        partners.push(_partner);
+        partnerIdx[_partner] = partners.length - 1;
+        emit AddPartner(msg.sender, _partner);
     }
 
     // @notice sets min stake amount
+    // @param _amount number of stakes
     function setMinStakeAmount(uint _amount) public onlyRole(MANAGER) {
+        require(_amount > 0, "Should be greater than zero");
         minStakeAmount = _amount;
+        emit SetMinStakeAmount(msg.sender, _amount);
     }
 
-    // @notice iterate by each lp token address and get user rewards from handlers
-    function getUserLpTokens(address _user) public view returns (uint) {
-        uint amount;
-        address[] memory _lpTokens = lpTokens;
-        if (_lpTokens.length == 0) {
-            return 0;
-        }
-        for (uint i; i < _lpTokens.length;) {
-            amount += ILpHandler(lpHandlers[_lpTokens[i]]).calc(_user);
-            unchecked { ++i; }
-        }
-        return amount;
+    // @notice sets max amount of partners
+    // @param _value num of partners
+    function setPartnersLimit(uint _value) public onlyRole(MANAGER) {
+        require(_value > 0, "Should be greater than zero");
+        require(_value != partnersLimit, "The number must be different");
+        require(_value >= partners.length, "Should be greater than current length of partners array");
+        partnersLimit = _value;
+        emit SetPartnersLimit(msg.sender, _value);
     }
 
-    function getLpTokens() external view returns (address[] memory) {
-        return lpTokens;
+    // @notice iterate by each partner address and get user rewards from handlers
+    // @param _user shows share of user in nTokens
+    function getUserLpTokens(address _user) public view returns (uint amount) {
+        if (partners.length == 0) return 0;
+        for (uint i; i < partners.length; i++) {
+            amount += IPartnerHandler(partners[i]).calc(_user);
+        }
     }
 
-    // @notice removing lp token address from list
-    function removeLpToken(address _lp) external onlyRole(MANAGER) {
-        require(_lp.isContract(), "_lp should be contract address");
-        require(isLpToken[_lp], "This LP token is not in the list");
-        isLpToken[_lp] = false;
-        for (uint i; i < lpTokens.length; i++) {
-            if (lpTokens[i] == _lp) {
-                lpTokens[i] = lpTokens[lpTokens.length - 1];
-                lpTokens.pop();
-                lpHandlers[_lp] = address(0);
-            }
-        }
+    // @notice gets the list of partners
+    function getPartners() external view returns (address[] memory) {
+        return partners;
+    }
+
+    // @notice removing partner address
+    // @param _partner address of adapter or handler
+    function removePartner(address _partner) external onlyRole(MANAGER) {
+        require(_partner.isContract(), "Partner should be contract address");
+        require(isPartner[_partner], "This partner is not in the list");
+        isPartner[_partner] = false;
+        address lastPartner = partners[partners.length - 1];
+        uint idx = partnerIdx[_partner];
+        partners[idx] = lastPartner;
+        partnerIdx[lastPartner] = idx;
+        partners.pop();
+        emit RemovePartner(msg.sender, _partner);
     }
 
     // @notice sorts the list in ascending order and return mean
-    function findMedium(uint[] memory _arr) private pure returns (uint mean) {
+    // @param _arr array with user's shares
+    function _getMedian(uint[] memory _arr) private pure returns (uint mean) {
         uint[] memory arr = _arr;
         uint len = arr.length;
         bool swapped = false;
@@ -213,6 +266,7 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
                 }
             }
             if (!swapped) {
+                if (len % 2 == 0) return (arr[len/2] + arr[len/2 - 1])/2;
                 return arr[len/2];
             }
         }
@@ -220,21 +274,38 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
         return arr[len/2];
     }
 
-    // @notice add amount to buffer until next era
+    // @notice adds tokens to the buffer during transfers.
+    //         Until the end of the current era, rewards for this amount will not be accrued
+    // @param _user users's address
+    // @param _amount number of tokens
     function addToBuffer(address _user, uint _amount) external onlyDistributor() {
         require(_user != address(0), "Zero address alarm!");
         uint era = currentEra();
         buffer[_user][era] += _amount;
     }
 
+    // @notice set buffer for user
+    // @param _user users's address
+    // @param _amount number of tokens
     function setBuffer(address _user, uint _amount) external onlyDistributor() {
         require(_user != address(0), "Zero address alarm");
         uint era = currentEra();
         buffer[_user][era] = _amount;
     }
 
+    // @notice sets maximum number of eraShot() calls
+    // @param _limit number of calls
     function setEraShotsLimit(uint _limit) public onlyRole(MANAGER) {
+        require(_limit > 0, "Should be greater than zero");
         eraShotsLimit = _limit;
+        emit SetEraShotsLimit(msg.sender, _limit);
+    }
+
+    // @notice Limits the maximum number of iterations in the loop when claiming rewards
+    // @param _val Number of txs
+    function setClaimingTxLimit(uint256 _val) public onlyRole(MANAGER) {
+        claimingTxLimit = _val;
+        emit SetClaimingTxLimit(msg.sender, _val);
     }
 
     // @notice checks if current era not claimed yet
@@ -254,21 +325,28 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
         for (uint i; i < numOfUnclaimedEras; i++) {
             try DAPPS_STAKING.claim_staker(address(this)) {
                 lastClaimed += 1;
+                emit ClaimStakerSuccess(era, lastClaimed);
             }
-            catch {
-                emit ClaimStakerError(lastClaimed + 1);
+            catch (bytes memory reason) {
+                emit ClaimStakerError(lastClaimed + 1, reason);
             }
         }
 
         uint balAfter = address(this).balance;
-        uint coms = (balAfter - balBefore) / 10; // 10% comission to revenue and unstaking pools
-        eraStakerReward[era].val += balAfter - balBefore - coms; // rewards to share between users
-        rewardPool += eraStakerReward[era].val;
-        totalRevenue += coms * 9 / 10; // 9% of era rewards goes to revenue pool
-        unstakingPool += coms / 10; // 1% of era rewards goes to unstaking pool
+
+        if (balAfter > balBefore) {
+            uint coms = (balAfter - balBefore) / MANAGEMENT_FEE; // 10% comission to revenue and unstaking pools
+            eraStakerReward[era].val += balAfter - balBefore - coms; // rewards to share between users
+            rewardPool += eraStakerReward[era].val;
+            totalRevenue += coms * REVENUE_FEE / FEE_PRECISION; // 9% of era rewards goes to revenue pool
+            unstakingPool += coms * UNSTAKING_FEE / FEE_PRECISION; // 1% of era rewards goes to unstaking pool
+        }
     }
 
     // @notice saving information about users balances
+    // @param _user user's address
+    // @param _utl utility name
+    // @param _dnt dnt name
     function eraShot(address _user, string memory _util, string memory _dnt) external onlyRole(MANAGER) {
         uint era = currentEra();
         require(_user != address(0), "Zero address alarm!");
@@ -278,14 +356,9 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
         // checks if _user haven't shots in era yet
         if (usersShotsPerEra[_user][era].length == 0) {
             uint[] memory arr = usersShotsPerEra[_user][era - 1];
-            uint userLastEraRewards = arr.length > 0 ? findMedium(arr) * eraStakerReward[era].val / 10**18 : 0;
+            uint userLastEraRewards = arr.length > 0 ? _getMedian(arr) * eraStakerReward[era].val / 10**18 : 0;
 
-            // cutting comission part
-            if (userLastEraRewards >= 10**16) {
-                totalUserRewards[_user] += userLastEraRewards / 10**16 * 10**16;
-            } else {
-                totalUserRewards[_user] += userLastEraRewards;
-            }
+            totalUserRewards[_user] += userLastEraRewards;
         }
 
         uint nBal = distr.getUserDntBalanceInUtil(_user, _util, _dnt);
@@ -299,6 +372,7 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
     }
 
     // @notice return users rewards
+    // @param _user user's address
     function getUserRewards(address _user) public view returns (uint) {
         return totalUserRewards[_user];
     }
@@ -308,7 +382,7 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
 
     // @notice ustake tokens from not yet updated eras
     // @param  [uint] _era => latest era to update
-    function globalUnstake() private {
+    function _globalUnstake() private {
         uint era = currentEra();
 
         // checks if enough time has passed
@@ -318,6 +392,7 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
 
         if (sum2unstake > 0) {
             try DAPPS_STAKING.unbond_and_unstake(address(this), uint128(sum2unstake)) {
+                emit UnbondAndUnstakeSuccess(era, sum2unstake);
                 sum2unstake = 0;
                 lastUnstaked = era;
             }
@@ -328,11 +403,13 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
     }
 
     // @notice withdraw unbonded tokens
-    // @param  [uint] _era => desired era
-    function globalWithdraw(uint _era) private {
+    // @param _era desired era
+    function _globalWithdraw(uint _era) private {
         uint balBefore = address(this).balance;
 
-        try DAPPS_STAKING.withdraw_unbonded() {}
+        try DAPPS_STAKING.withdraw_unbonded() {
+            emit WithdrawUnbondedSuccess(_era);
+        }
         catch (bytes memory reason) {
             emit WithdrawUnbondedError(_era, reason);
         }
@@ -342,11 +419,13 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
     }
 
     // @notice claim dapp rewards, transferred to dapp owner
-    // @param  [uint] _era => desired era number
-    function claimDapp(uint _era) private {
+    // @param _era desired era number
+    function _claimDapp(uint _era) private {
         for (uint i = lastUpdated + 1; i <= _era; ) {
             if (eraStakerReward[i].val > 0) {
-                try DAPPS_STAKING.claim_dapp(address(this), uint128(_era)) {}
+                try DAPPS_STAKING.claim_dapp(address(this), uint128(_era)) {
+                    emit ClaimDappSuccess(eraStakerReward[i].val, _era);
+                }
                 catch (bytes memory reason) {
                     emit ClaimDappError(eraStakerReward[i].val, i, reason);
                 }
@@ -355,18 +434,16 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
         }
     }
 
-    // -------------- USER FUNCS
-    // -------------------------
-
     // @notice updates global balances
     modifier updateAll() {
         uint era = currentEra() - 1; // last era to update
         if (lastUpdated != era) {
-            updates(era);
+            _updates(era);
         }
         _;
     }
 
+    // @notice checks that only NDistributor msg.sender
     modifier onlyDistributor() {
         require(msg.sender == address(distr), "Only for distributor!");
         _;
@@ -393,8 +470,8 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
     }
 
     // @notice unstake tokens from app, loose DNT
-    // @param  [uint] _amount => amount of tokens to unstake
-    // @param  [bool] _immediate => receive tokens from unstaking pool, create a withdrawal otherwise
+    // @param _amount amount of tokens to unstake
+    // @param _immediate receive tokens from unstaking pool, create a withdrawal otherwise
     function unstake(uint _amount, bool _immediate) external updateAll {
         uint userDntBalance = distr.getUserDntBalanceInUtil(
             msg.sender,
@@ -433,7 +510,7 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
     }
 
     // @notice claim rewards by user
-    // @param  [uint] _amount => amount of claimed reward
+    // @param _amount amount of claimed reward
     function claim(uint _amount) external updateAll {
         require(rewardPool >= _amount, "Rewards pool drained!");
         require(
@@ -448,7 +525,7 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
     }
 
     // @notice finish previously opened withdrawal
-    // @param  [uint] _id => withdrawal index
+    // @param _id withdrawal index
     function withdraw(uint _id) external updateAll {
         Withdrawal storage withdrawal = withdrawals[msg.sender][_id];
         uint val = withdrawal.val;
@@ -469,7 +546,7 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
     // -----------------------
 
     // @notice add new staker and save balances
-    // @param  [address] => user to add
+    // @param _addr user to add
     function addStaker(address _addr) external onlyDistributor() {
         require(!isStaker[_addr], "Already staker");
         stakers.push(_addr);
@@ -480,60 +557,73 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
     function fillUnbonded() external payable {
         require(msg.value > 0, "Provide some value!");
         unbondedPool += msg.value;
+        emit FillUnbonded(msg.sender, msg.value);
     }
 
     // @notice utility func for filling reward pool manually
     function fillRewardPool() external payable {
         require(msg.value > 0, "Provide some value!");
         rewardPool += msg.value;
+        emit FillRewardPool(msg.sender, msg.value);
     }
 
     // @notice manually fill the unstaking pool
     function fillUnstaking() external payable {
         require(msg.value > 0, "Provide some value!");
         unstakingPool += msg.value;
+        emit FillUnstaking(msg.sender, msg.value);
     }
 
     // @notice utility function in case of excess gas consumption
+    // @param _era desired era number
     function sync(uint _era) external onlyRole(MANAGER) {
         require(_era > lastUpdated && _era < currentEra(), "Wrong era range");
-        updates(_era);
+        _updates(_era);
+        emit Synchronization(msg.sender, _era);
     }
 
-    function updates(uint _era) private {
-        globalWithdraw(_era);
-        claimDapp(_era);
-        globalUnstake();
+    // @notice updates state while calling stake(), unstake(), claim(), withdraw()
+    // @param _era desired era
+    function _updates(uint _era) private {
+        _globalWithdraw(_era);
+        _claimDapp(_era);
+        _globalUnstake();
         lastUpdated = _era;
     }
 
+    // @notice needed to withdraw revenue by admin
+    // @param _amount value
     function withdrawRevenue(uint _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(totalRevenue >= _amount, "Not enough funds in revenue pool");
         totalRevenue -= _amount;
         payable(msg.sender).sendValue(_amount);
+        emit WithdrawRevenue(_amount);
     }
 
-    // @notice      disabled revoke ownership functionality
-    function revokeRole(bytes32 role, address account)
+    // @notice disabled revoke ownership functionality
+    // @param _role role to revoke
+    // @param _account revoke target
+    function revokeRole(bytes32 _role, address _account)
         public
         override
-        onlyRole(getRoleAdmin(role))
+        onlyRole(getRoleAdmin(_role))
     {
-        require(role != DEFAULT_ADMIN_ROLE, "Not allowed to revoke admin role");
-        _revokeRole(role, account);
+        require(_role != DEFAULT_ADMIN_ROLE, "Not allowed to revoke admin role");
+        _revokeRole(_role, _account);
     }
 
-    // @notice      disabled revoke ownership functionality
-    function renounceRole(bytes32 role, address account) public override {
+    // @notice disabled revoke ownership functionality
+    // @param _account who wants to renounce
+    // @param _role name of role
+    function renounceRole(bytes32 _role, address _account) public override {
         require(
-            account == _msgSender(),
+            _account == _msgSender(),
             "AccessControl: can only renounce roles for self"
         );
         require(
-            role != DEFAULT_ADMIN_ROLE,
+            _role != DEFAULT_ADMIN_ROLE,
             "Not allowed to renounce admin role"
         );
-        _revokeRole(role, account);
+        _revokeRole(_role, _account);
     }
-
 }

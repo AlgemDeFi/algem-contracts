@@ -36,12 +36,3 @@ contract KaglaHandler {
         sum = ((userLpBal + userGaugeBal) * virtualPrice) * nTokensInPool / (tokensInPool + nTokensInPool);
     }
 }
-
-// deployed kagla handler 0xA87A2bd44854F9c5002486D16E627e60e5FE43e8
-
-// gauge 0xEC1BD689f7576E912348D50aE3F10F4cA5489384
-// lp 0x847f0Fd7e3A234E7321D01fF2347E4501eA89cF1
-// pool 0x327d5322242B5558bebA1dfb9C02A9Da63551D67
-// nASTR 0xE511ED88575C57767BAfb72BfD10775413E3F2b0
-
-// ((userLpBal + userGaugeBal) * (virtualPrice)) * nTokensInPool / (tokensInPool + nTokensInPool)
