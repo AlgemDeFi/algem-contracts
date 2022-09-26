@@ -24,10 +24,14 @@ Run ```npx hardhat %TASK_NAME%```
 * **registerDapp** register contract in DAPPS_STAKING module
 
 # Compile
+```yarn compile```
+or
 ```npx hardhat compile```
 
 # Deploy & setup
-```npx hardhat run scripts/init.ts```
+```yarn deploy --network %NETWORK_NAME%```
+or
+```npx hardhat run scripts/init.ts --network %NETWORK_NAME%```
 
 
 # Test
