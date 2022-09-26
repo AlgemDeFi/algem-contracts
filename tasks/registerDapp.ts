@@ -9,7 +9,7 @@ task("registerDapp", "Registers contract in DAPPS_STAKING module")
         const alice = keyring.addFromUri('//Alice', { name: 'Alice default' });
         const api = await ApiPromise.create({ provider: wsProvider });
 
-        const tx = api.tx.dappsStaking.register({ evm: taskArgs.contract });
+        const tx = api.tx.dappsStaking.register("Xrb2mPkS8RvT584xtJUaBm2mts79xc2Wm8bWoVCErvjmSRb",{evm: taskArgs.contract });
         const txHash = await tx.signAndSend(alice);
         console.log("Registered [", taskArgs.contract, "]");
 
