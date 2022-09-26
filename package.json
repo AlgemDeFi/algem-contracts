@@ -34,7 +34,7 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test --network astarLocal",
-    "deploy": "echo \"TBD\"",
+    "deploy": "npx hardhat run scripts/init.ts",
     "chain": "./astar-collator --dev"
   }
 }
