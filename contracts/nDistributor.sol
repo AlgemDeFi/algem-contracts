@@ -209,7 +209,7 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
         require(_newManager != address(0), "Zero address alarm!");
-        require(!hasRole(MANAGER, _newManager), "Allready manager");
+        require(!hasRole(MANAGER, _newManager), "Already manager");
         managerIds[_newManager] = managers.length;
         managers.push(_newManager);
         _grantRole(MANAGER, _newManager);

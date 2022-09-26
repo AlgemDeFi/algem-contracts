@@ -151,9 +151,6 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
         uint era = DAPPS_STAKING.read_current_era() - 1;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MANAGER, msg.sender);
-        setMinStakeAmount(100*10**18);
-        setEraShotsLimit(15);
-        setPartnersLimit(15);
         withdrawBlock = DAPPS_STAKING.read_unbonding_period();
         DNTname = _DNTname;
         utilName = _utilName;
@@ -165,14 +162,15 @@ contract LiquidStaking is Initializable, AccessControlUpgradeable {
         lastUnstaked = era;
         lastClaimed = era;
 
-        claimingTxLimit = 5;
     }
 
     // @notice Needed for upgrade contract, by setting the initial values to added variables
     function initialize2() external onlyRole(MANAGER) {
         setClaimingTxLimit(5);
         setPartnersLimit(15);
-        DAPPS_STAKING.set_reward_destination(DappsStaking.RewardDestination(0)); //set rewards destionation
+        setMinStakeAmount(100*10**18);
+        setEraShotsLimit(15);
+        DAPPS_STAKING.set_reward_destination(DappsStaking.RewardDestination.FreeBalance); //set rewards destionation
     }
 
     // ------------------ VIEWS

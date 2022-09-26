@@ -51,6 +51,10 @@ async function main() {
     tx = await distr.setLiquidStaking(ls.address);
     await tx.wait();
     console.log("Added liquidstaking via setLiquidStaking");
+
+    tx = await ls.initialize2();
+    await tx.wait();
+    console.log("Initialize2 done");
 }
 
 main().catch((error) => {

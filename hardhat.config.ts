@@ -12,15 +12,15 @@ import * as fs from "fs";
 
 dotenv.config();
 
+const zeroes = "0000000000000000000000000000000000000000000000000000000000000000"
 //astar
 export const LiquidStakingAddr = "0x70d264472327B67898c919809A9dc4759B6c0f27";
-
 function deployerPK(network: string) {
-  const pk = process.env.DEPLOYER !== undefined ? process.env.DEPLOYER : "";
+  const pk = process.env.DEPLOYER !== undefined ? process.env.DEPLOYER : zeroes;
   if (pk !== "") {
     console.log("Using deployer defined in .env for", network);
   } else {
-    console.log("Deployer private key not found in .env!");
+    console.log("Deployer private key not found in .env, see .env.example");
   }
     return pk;
 }
