@@ -27,21 +27,23 @@ let offset: BigNumber = BigNumber.from("1000000000");
 let rewPerEra: BigNumber;
 let unbPeriod: BigNumber;
 
-const unknownUtil = "unk";
-
+//wait n sec
 const wait = async (ms: number) => {
   console.log("Waiting", ms, "ms")
   await new Promise(f => setTimeout(f, ms));
 }
-async function sleep(eras: number) {
-  await new Promise(f => setTimeout(f, eras * 120 * 1000));
+
+let eraDuration = 30;
+//wait n eras
+async function waitEra(eras: number) {
+  await new Promise(f => setTimeout(f, eras * eraDuration * 1000));
 }
 
 async function era() {
   return await liquidStaking.currentEra();
 }
 
-// work
+// wait till next era 
 async function nextEra() {
   const _era = (await era()).add(1);
   while (true) {
@@ -67,10 +69,10 @@ async function info() {
   console.log('Signer dnt in util2 ', await distr.getUserDntBalanceInUtil(signer.address, consts.util2, consts.dnt));
   console.log('Acc dnt in util     ', await distr.getUserDntBalanceInUtil(acc.address, consts.util, consts.dnt));
   console.log('Acc dnt in util2    ', await distr.getUserDntBalanceInUtil(acc.address, consts.util2, consts.dnt));
-  console.log('Preview signer rews ', await liquidStaking.previewUserRewards(consts.util, signer.address));
-  console.log('Preview signer rews2', await liquidStaking.previewUserRewards(consts.util2, signer.address));
-  console.log('Preview acc rews    ', await liquidStaking.previewUserRewards(consts.util, acc.address));
-  console.log('Preview acc rews2   ', await liquidStaking.previewUserRewards(consts.util2, acc.address));
+  console.log('Preview signer rews ', await liquidStaking.getUserRewards(signer.address));
+  console.log('Preview signer rews2', await liquidStaking.getUserRewards(signer.address));
+  console.log('Preview acc rews    ', await liquidStaking.getUserRewards(acc.address));
+  console.log('Preview acc rews2   ', await liquidStaking.getUserRewards(acc.address));
   console.log('Rewards pool        ', await liquidStaking.rewardPool());
   console.log('Unbonded pool       ', await liquidStaking.unbondedPool());
   console.log('Unstaking pool      ', await liquidStaking.unstakingPool());
@@ -88,17 +90,19 @@ describe("App", function () {
       signer = accs[0];
       acc = accs[1];
 
+      // get contracts if set in config
       if (cfg.distr !== "") {
-        distr = await ethers.getContractAt('NDistributor', cfg.distr, signer);
+        distr = await ethers.getContractAt('NDistributor', cfg.distr);
       }
       if (cfg.nASTR !== "") {
-        nASTR = await ethers.getContractAt('NASTR', cfg.nASTR, signer);
+        nASTR = await ethers.getContractAt('NASTR', cfg.nASTR);
       }
       if (cfg.liquidStaking !== "") {
-        liquidStaking = await ethers.getContractAt('LiquidStaking', cfg.liquidStaking, signer);
+        liquidStaking = await ethers.getContractAt('LiquidStaking', cfg.liquidStaking);
       }
-      dappsStaking = await ethers.getContractAt('DappsStaking', cfg.dappsStaking, signer);
+      dappsStaking = await ethers.getContractAt('DappsStaking', cfg.dappsStaking);
 
+      //give initial money to some addresses
       for (let i = 0; i < 15; i++) {
         await run("giveMoney", { to: accs[i].address, amount: "1000" });
         await wait(2000);
@@ -115,6 +119,7 @@ describe("App", function () {
     });
 
     describe("Deploy contracts", function () {
+
       it("Should deploy NDistributor", async () => {
         if (distr !== undefined) {
           console.log("Using already deployed contract at", distr.address);
@@ -125,6 +130,7 @@ describe("App", function () {
         }
         expect(distr.address).not.to.be.eq(zeroAddress);
       });
+
       it("Should deploy DNT", async () => {
         if (nASTR !== undefined) {
           console.log("Using already deployed contract at", nASTR.address);
@@ -136,6 +142,7 @@ describe("App", function () {
         }
         expect(nASTR.address).to.be.not.eq(zeroAddress);
       });
+
       it("Should deploy LiquidStaking", async () => {
         if (liquidStaking !== undefined) {
           console.log("Using already deployed contract at", liquidStaking.address);
@@ -150,67 +157,74 @@ describe("App", function () {
         }
         expect(liquidStaking.address).to.be.not.eq(zeroAddress);
       });
+
     });
 
     describe("Initial setup", function () {
+
       it("Should add dnt in distributor", async () => {
         expect(await distr.addDnt(consts.dnt, nASTR.address)).to.satisfy;
       });
+
       it("Should set util in distributor", async () => {
         expect(await distr.addUtility(consts.util)).to.satisfy;
       });
+
       it("Should set liquid staking addr in distributor", async () => {
         expect(await distr.setLiquidStaking(liquidStaking.address)).to.satisfy;
       });
+
       it("Should set dnt as manager in distributor", async () => {
         expect(await distr.addManager(nASTR.address)).to.satisfy;
       });
+
       it("Should add liquid staking as manager in distributor", async () => {
         expect(await distr.addManager(liquidStaking.address)).to.satisfy;
       });
 
-      it("Should register dAPP", async () => {
+      it("Should register dApp", async () => {
         await run("registerDapp", { contract: liquidStaking.address });
         await wait(2000);
-
       });
 
     });
 
     describe("Admin functions", function () {
+
       describe("NDistributor", function () {
+
         it("Should add manager", async () => {
           expect(
-            await distr.addManager(accs[5].address)
+            await distr.connect(signer).addManager(accs[5].address)
           ).to.satisfy;
           expect(
-            await distr.addManager(accs[6].address)
+            await distr.connect(signer).addManager(accs[6].address)
           ).to.satisfy;
           expect(distr.connect(accs[1]).addManager(accs[2].address)).to.be.reverted;
         });
 
         it("Should not add zero manager", () => {
-          expect(distr.addManager(zeroAddress)).to.be.reverted;
+          expect(distr.connect(signer).addManager(zeroAddress)).to.be.reverted;
         })
 
         it("Should remove manager", async () => {
           expect(distr.connect(accs[1]).removeManager(accs[5].address)).to.be.reverted;
-          //expect(
-          //    await distr.removeManager(accs[5].address)
-          //).to.satisfy;
+          expect(
+              await distr.connect(signer).removeManager(accs[5].address)
+          ).to.satisfy;
         });
 
         it("Should change manager", async () => {
           expect(distr.connect(accs[1]).changeManagerAddress(accs[6].address)).to.be.reverted;
           expect(
-            await distr.changeManagerAddress(accs[6].address, accs[9].address)
+            await distr.connect(signer).changeManagerAddress(accs[6].address, accs[9].address)
           ).to.satisfy;
         });
 
         it("Should add utility to disallow list", async () => {
-          expect(distr.connect(accs[1]).addUtilityToDisalowList("TestDisallow")).to.be.reverted;
+          expect(distr.connect(accs[1]).addUtilityToDisallowList("TestDisallow")).to.be.reverted;
           expect(
-            await distr.addUtilityToDissalowList("TestDisallow")
+            await distr.connect(accs[9]).addUtilityToDisallowList("TestDisallow")
           ).to.satisfy;
         });
 
@@ -227,10 +241,11 @@ describe("App", function () {
 
         it("Should not change dnt address to non-contract", async () => {
           expect(distr.changeDntAddress("nASTR", accs[9].address)).to.be.reverted;
-        })
+        });
       });
 
       describe("NASTR", function () {
+
         it("Should pause", async () => {
           expect(nASTR.connect(accs[1]).pause()).to.be.reverted;
           expect(
@@ -238,6 +253,7 @@ describe("App", function () {
           ).to.satisfy;
           await wait(2000);
         });
+
         it("Should unpause", async () => {
           expect(nASTR.connect(accs[1]).unpause()).to.be.reverted;
           expect(
@@ -296,11 +312,13 @@ describe("App", function () {
     });
 
     describe("Core functions", function () {
+
       describe("Staking", function () {
+
         it("Should stake", async () => {
 
-          let signerRewardsBefore = await liquidStaking.previewUserRewards(consts.util, signer.address);
-          let accRewardsBefore = await liquidStaking.previewUserRewards(consts.util, acc.address);
+          let signerRewardsBefore = await liquidStaking.getUserRewards(signer.address);
+          let accRewardsBefore = await liquidStaking.getUserRewards(acc.address);
 
           expect(signerRewardsBefore).to.be.eq(0);
           expect(accRewardsBefore).to.be.eq(0);
@@ -309,32 +327,47 @@ describe("App", function () {
           console.log('Before staking:');
           await info();
 
-          let tx = await liquidStaking.connect(signer).stake([consts.util], [amount], { value: amount });
+          let tx = await liquidStaking.connect(signer).stake({ value: amount });
           await tx.wait();
 
-          expect(await liquidStaking.initialize2()).to.satisfy;
+          //expect(await liquidStaking.initialize2()).to.satisfy;
 
-          tx = await liquidStaking.setting();
-          await tx.wait();
+          //tx = await liquidStaking.setting();
+          //await tx.wait();
 
-          tx = await liquidStaking.connect(acc).stake([consts.util], [amount], { value: amount });
+          tx = await liquidStaking.connect(acc).stake({ value: amount });
           await tx.wait();
 
           // signer balance = amount
           // acc balance = amount
 
-          await expect(liquidStaking.stake([unknownUtil], [amount], { value: amount })).to.be.rejectedWith("Dapp not active");
-          await expect(liquidStaking.stake([consts.util], [0], { value: amount })).to.be.rejectedWith("Not enough stake amount");
-          await expect(liquidStaking.stake([consts.util], [amount], { value: amount.div(2) })).to.be.rejectedWith("Incorrect value");
+          //expect(liquidStaking.stake([consts.unknownUtil], [amount], { value: amount })).to.be.revertedWith("Dapp not active");
+          //expect(liquidStaking.stake([consts.util], [0], { value: amount })).to.be.revertedWith("Not enough stake amount");
+          //expect(liquidStaking.stake([consts.util], [amount], { value: amount.div(2) })).to.be.revertedWith("Incorrect value");
 
           console.log('After staking:');
           await info();
           await nextEra();
+          
+          expect(
+              await liquidStaking.setDest(false)
+            ).to.satisfy;
+
+
           tx = await liquidStaking.sync(await era());
           await tx.wait();
 
-          let signerRewardsAfter = await liquidStaking.previewUserRewards(consts.util, signer.address);
-          let accRewardsAfter = await liquidStaking.previewUserRewards(consts.util, acc.address);
+
+          await run("eraShot", {user: signer.address, 
+                        util: consts.util,
+                        dnt: consts.dnt});
+
+          await run("eraShot", {user: acc.address, 
+                        util: consts.util,
+                        dnt: consts.dnt});
+
+          let signerRewardsAfter = await liquidStaking.getUserRewards(signer.address);
+          let accRewardsAfter = await liquidStaking.getUserRewards(acc.address);
           let rewardsBefore = await liquidStaking.rewardPool();
 
           expect(signerRewardsAfter).to.be.eq(0);
@@ -345,8 +378,14 @@ describe("App", function () {
           tx = await liquidStaking.sync(await era());
           await tx.wait();
 
-          signerRewardsAfter = await liquidStaking.previewUserRewards(consts.util, signer.address);
-          accRewardsAfter = await liquidStaking.previewUserRewards(consts.util, acc.address);
+          await run("eraShot", {user: signer.address, 
+                        util: consts.util,
+                        dnt: consts.dnt});
+          await run("eraShot", {user: acc.address, 
+                        util: consts.util,
+                        dnt: consts.dnt});
+          signerRewardsAfter = await liquidStaking.getUserRewards(signer.address);
+          accRewardsAfter = await liquidStaking.getUserRewards(acc.address);
           let rewardsAfter = await liquidStaking.rewardPool();
           let eraRewards = rewardsAfter.sub(rewardsBefore);
 
@@ -376,16 +415,16 @@ describe("App", function () {
           tx = await liquidStaking.sync(await era());
           await tx.wait();
 
-          let signerRewardsBefore = await liquidStaking.previewUserRewards(consts.util, signer.address);
-          let accRewardsBefore = await liquidStaking.previewUserRewards(consts.util, acc.address);
+          let signerRewardsBefore = await liquidStaking.getUserRewards(signer.address);
+          let accRewardsBefore = await liquidStaking.getUserRewards(acc.address);
 
           await info();
           await nextEra();
           tx = await liquidStaking.sync(await era());
           await tx.wait();
 
-          let signerRewardsAfter = await liquidStaking.previewUserRewards(consts.util, signer.address);
-          let accRewardsAfter = await liquidStaking.previewUserRewards(consts.util, acc.address);
+          let signerRewardsAfter = await liquidStaking.getUserRewards(signer.address);
+          let accRewardsAfter = await liquidStaking.getUserRewards(acc.address);
 
           await info();
 
@@ -405,7 +444,7 @@ describe("App", function () {
           let tx = await liquidStaking.sync(await era());
           await tx.wait();
 
-          let previewRewards = await liquidStaking.previewUserRewards(consts.util, acc.address);
+          let previewRewards = await liquidStaking.getUserRewards(acc.address);
 
           tx = await liquidStaking.syncHarvest(acc.address, [consts.util]);
           await tx.wait();
@@ -423,7 +462,7 @@ describe("App", function () {
 
           await info();
 
-          let previewRewards = await liquidStaking.previewUserRewards(consts.util, acc.address);
+          let previewRewards = await liquidStaking.getUserRewards(acc.address);
           let toClaim = previewRewards.div(2);
 
           let accBalanceBefore = await acc.getBalance();
@@ -437,7 +476,7 @@ describe("App", function () {
           let accBalanceAfter = await acc.getBalance();
           expect(accBalanceBefore.add(toClaim)).to.be.eq(accBalanceAfter);
 
-          let previewRewardsAfter = await liquidStaking.previewUserRewards(consts.util, acc.address);
+          let previewRewardsAfter = await liquidStaking.getUserRewards(acc.address);
           expect(previewRewardsAfter).to.be.eq(previewRewards.sub(toClaim));
         });
 
@@ -450,14 +489,14 @@ describe("App", function () {
 
           await info();
 
-          let previewRewards = await liquidStaking.previewUserRewards(consts.util, acc.address);
+          let previewRewards = await liquidStaking.getUserRewards(acc.address);
 
           tx = await liquidStaking.connect(acc).claimAll();
           await expect(() => tx).changeEtherBalance(acc, previewRewards);
 
           await info();
 
-          expect(await liquidStaking.previewUserRewards(consts.util, acc.address)).to.be.eq(0);
+          expect(await liquidStaking.getUserRewards(acc.address)).to.be.eq(0);
         });
 
         // @notice claim user rewards from utilities
@@ -497,10 +536,10 @@ describe("App", function () {
             await info();
 
             let rewardsBefore = await liquidStaking.rewardPool();
-            let signerRewards1Before = await liquidStaking.previewUserRewards(consts.util, signer.address);
-            let signerRewards2Before = await liquidStaking.previewUserRewards(consts.util2, signer.address);
-            let accRewards1Before = await liquidStaking.previewUserRewards(consts.util, acc.address);
-            let accRewards2Before = await liquidStaking.previewUserRewards(consts.util2, acc.address);
+            let signerRewards1Before = await liquidStaking.getUserRewards(consts.util, signer.address);
+            let signerRewards2Before = await liquidStaking.getUserRewards(consts.util2, signer.address);
+            let accRewards1Before = await liquidStaking.getUserRewards(consts.util, acc.address);
+            let accRewards2Before = await liquidStaking.getUserRewards(consts.util2, acc.address);
 
             await nextEra();
             tx = await liquidStaking.sync(await era());
@@ -508,10 +547,10 @@ describe("App", function () {
             await info();
 
             let rewardsAfter = await liquidStaking.rewardPool();
-            let signerRewards1After = await liquidStaking.previewUserRewards(consts.util, signer.address);
-            let signerRewards2After = await liquidStaking.previewUserRewards(consts.util2, signer.address);
-            let accRewards1After = await liquidStaking.previewUserRewards(consts.util, acc.address);
-            let accRewards2After = await liquidStaking.previewUserRewards(consts.util2, acc.address);
+            let signerRewards1After = await liquidStaking.getUserRewards(consts.util, signer.address);
+            let signerRewards2After = await liquidStaking.getUserRewards(consts.util2, signer.address);
+            let accRewards1After = await liquidStaking.getUserRewards(consts.util, acc.address);
+            let accRewards2After = await liquidStaking.getUserRewards(consts.util2, acc.address);
 
             let eraRewards = rewardsAfter.sub(rewardsBefore);
             let signerRewards1 = signerRewards1After.sub(signerRewards1Before);
@@ -529,7 +568,7 @@ describe("App", function () {
     */
   });
 
-  describe("SiriusAdapter", function () {
+  describe.skip("SiriusAdapter", function () {
     // users vars
     let deployer: SignerWithAddress,
       user1: SignerWithAddress,

@@ -2,12 +2,11 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@openzeppelin/hardhat-upgrades";
 import "@nomiclabs/hardhat-ethers";
 import "hardhat-deploy";
-import "./tasks/index";
 import '@typechain/hardhat'
 import "@nomicfoundation/hardhat-toolbox";
+import "./tasks/index";
 
 import * as dotenv from "dotenv";
-import * as fs from "fs";
 
 
 dotenv.config();
@@ -41,6 +40,19 @@ const config: HardhatUserConfig = {
     }],
   },
   networks: {
+    astarAlgem: {
+      live: false,
+      saveDeployments: false,
+      tags: ["local", "test"],
+      url: "http://80.78.24.17:9933",
+      chainId: 4369,
+      accounts: {
+        count: 20,
+        path: "m/44'/60'/0'/0/0",
+        // DO NOT USE THIS MNEMONIC IN PRODUCTION
+        mnemonic: "gown village inner smoke child coach mutual ancient wide warrior document antique",
+      },
+    },
     astarLocal: {
       live: false,
       saveDeployments: false,

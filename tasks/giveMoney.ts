@@ -5,8 +5,8 @@ import * as polkadotCryptoUtils from "@polkadot/util-crypto";
 task("giveMoney", "Give money from Alice dev account")
     .addParam("to", "Whom to give")
     .addParam("amount", "Amount of tokens")
-    .setAction(async (taskArgs, { ethers }) => {
-        const amount = ethers.utils.parseEther(taskArgs.amount);
+    .setAction(async (taskArgs, hre) => {
+        const amount = hre.ethers.utils.parseEther(taskArgs.amount);
 
         let recepient = "";
         if (taskArgs.to) {
@@ -19,7 +19,8 @@ task("giveMoney", "Give money from Alice dev account")
             console.log("provide address")
         }
 
-        const wsProvider = new WsProvider('ws://localhost:9944')
+        const url = hre.network.name == "astarAlgem" ? "ws://80.78.24.17:9944" : "ws://localhost:9944";
+        const wsProvider = new WsProvider(url)
         const keyring = new Keyring({ type: 'sr25519' });
 
         const polkalice = keyring.addFromUri('//Alice', { name: 'Alice default' });
