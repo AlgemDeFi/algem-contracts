@@ -29,10 +29,6 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     uint256 public revenuePool;
     uint256 public totalStaked;
 
-    // to remove
-    uint256 public amount876;
-    bool public flag;
-
     mapping(address => uint256) public lpBalances;
     mapping(address => uint256) public gaugeBalances;
     mapping(address => uint256) public rewards;
@@ -40,12 +36,28 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
     bool public abilityToAddLpAndGauge;
 
-    event AddLiquidity(address indexed user, uint256[] indexed amounts, bool autoStake, uint256 indexed lpAmount);
-    event RemoveLiquidity(address indexed user, uint256 amountLP, uint256 indexed receivedASTR);
+    event AddLiquidity(
+        address indexed user,
+        uint256[] indexed amounts,
+        bool autoStake,
+        uint256 indexed lpAmount
+    );
+    event RemoveLiquidity(
+        address indexed user,
+        uint256 amountLP,
+        uint256 indexed receivedASTR
+    );
     event DepositLP(address indexed, uint256 amount);
-    event WithdrawLP(address indexed user, uint256 indexed amount, bool indexed autoWithdraw);
+    event WithdrawLP(
+        address indexed user,
+        uint256 indexed amount,
+        bool indexed autoWithdraw
+    );
     event Claim(address indexed user, uint256 indexed amount);
-    event HarvestRewards(address indexed user, uint256 indexed rewardsToHarvest);
+    event HarvestRewards(
+        address indexed user,
+        uint256 indexed rewardsToHarvest
+    );
     event SetAbilityToAddLpAndGauge(bool indexed _b);
 
     // @notice Updates rewards
@@ -61,7 +73,10 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
     // @notice check if the caller is an external owned account
     modifier notAllowContract() {
-        require(!msg.sender.isContract() && tx.origin == msg.sender, "Allows only for EOA");
+        require(
+            !msg.sender.isContract() && tx.origin == msg.sender,
+            "Allows only for EOA"
+        );
         _;
     }
 
@@ -99,7 +114,10 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     // @notice Withdraw revenue part in SRS tokens
     // @param _amount Amount of funds to withdraw
     function withdrawRevenue(uint256 _amount) external onlyOwner {
-        require(srs.balanceOf(address(this)) >= _amount, "Not enough SRS revenue");
+        require(
+            srs.balanceOf(address(this)) >= _amount,
+            "Not enough SRS revenue"
+        );
         require(_amount > 0, "Should be greater than zero");
         revenuePool -= _amount;
         srs.safeTransfer(msg.sender, _amount);
@@ -117,22 +135,43 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     // @param _amounts The amounts of each token to add
     //        idx 0 is ASTR, idx 1 is nASTR
     // @param _autoStake If true, LP tokens go to stake at the same tx
-    function addLiquidity(uint256[] calldata _amounts, bool _autoStake) external payable notAllowContract nonReentrant {
-        require(msg.value == _amounts[0], "Value need to be equal to amount of ASTR tokens");
-        require(_amounts[0] > 0 && _amounts[1] > 0, "Amounts of tokens should be greater than zero");
-        require(_amounts.length == 2, "The length of amounts must be equal to two");
+    function addLiquidity(uint256[] calldata _amounts, bool _autoStake)
+        external
+        payable
+        notAllowContract
+        nonReentrant
+    {
+        require(
+            msg.value == _amounts[0],
+            "Value need to be equal to amount of ASTR tokens"
+        );
+        require(
+            _amounts[0] > 0 && _amounts[1] > 0,
+            "Amounts of tokens should be greater than zero"
+        );
+        require(
+            _amounts.length == 2,
+            "The length of amounts must be equal to two"
+        );
 
         nToken.safeTransferFrom(msg.sender, address(this), _amounts[1]);
 
         uint256 calculatedLpAmount = pool.calculateTokenAmount(_amounts, true);
-        require(calculatedLpAmount > 0, "Calculated LP amount should be greater than zero");
+        require(
+            calculatedLpAmount > 0,
+            "Calculated LP amount should be greater than zero"
+        );
 
-        uint256 minToMint = calculatedLpAmount * 9 / 10; // min amount for slippage control
+        uint256 minToMint = (calculatedLpAmount * 9) / 10; // min amount for slippage control
 
         // allow the pool take the _amount of nastr
         nToken.approve(address(pool), _amounts[1]);
 
-        uint256 lpAmount = pool.addLiquidity{value: msg.value}(_amounts, minToMint, block.timestamp + 1200);
+        uint256 lpAmount = pool.addLiquidity{value: msg.value}(
+            _amounts,
+            minToMint,
+            block.timestamp + 1200
+        );
         lpBalances[msg.sender] += lpAmount;
 
         if (_autoStake) {
@@ -143,7 +182,11 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
     // @notice Remove liquidity from the pool
     // @param _amounts Amount of LP tokens to remove
-    function removeLiquidity(uint256 _amount) public notAllowContract nonReentrant {
+    function removeLiquidity(uint256 _amount)
+        public
+        notAllowContract
+        nonReentrant
+    {
         require(_amount > 0, "Should be greater than zero");
         require(lpBalances[msg.sender] >= _amount, "Not enough LP");
 
@@ -171,9 +214,16 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     // @notice With this function users can transfer LP tokens to their balance in the adapter contract
     //         Needed to move from "handler contracts" to adapters
     // @param _autoDeposit Allows to deposit LP at the same tx
-    function addLp(uint256 _amount, bool _autoDeposit) external notAllowContract nonReentrant {
+    function addLp(uint256 _amount, bool _autoDeposit)
+        external
+        notAllowContract
+        nonReentrant
+    {
         require(abilityToAddLpAndGauge, "Functionality disabled");
-        require(lp.balanceOf(msg.sender) >= _amount, "Not enough LP on balance");
+        require(
+            lp.balanceOf(msg.sender) >= _amount,
+            "Not enough LP on balance"
+        );
         require(_amount > 0, "Shoud be greater than zero");
 
         lp.safeTransferFrom(msg.sender, address(this), _amount);
@@ -185,9 +235,17 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     }
 
     // @notice Receive Gauge tokens from user
-    function addGauge(uint256 _amount) external update notAllowContract nonReentrant {
+    function addGauge(uint256 _amount)
+        external
+        update
+        notAllowContract
+        nonReentrant
+    {
         require(abilityToAddLpAndGauge, "Functionality disabled");
-        require(gauge.balanceOf(msg.sender) >= _amount, "Not enough Gauge on balance");
+        require(
+            gauge.balanceOf(msg.sender) >= _amount,
+            "Not enough Gauge on balance"
+        );
         require(_amount > 0, "Shoud be greater than zero");
 
         gauge.safeTransferFrom(msg.sender, address(this), _amount);
@@ -195,7 +253,9 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         totalStaked += _amount;
 
         // from this moment user can pretend to rewards so set him rewardDebt
-        rewardDebt[msg.sender] = gaugeBalances[msg.sender] * accumulatedRewardsPerShare / REWARDS_PRECISION;
+        rewardDebt[msg.sender] =
+            (gaugeBalances[msg.sender] * accumulatedRewardsPerShare) /
+            REWARDS_PRECISION;
     }
 
     // @notice Deposit LP tokens to farm pool and receives Gauge tokens instead
@@ -216,15 +276,24 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
         gaugeBalances[msg.sender] += receivedGauge;
         totalStaked += receivedGauge;
-        rewardDebt[msg.sender] = gaugeBalances[msg.sender] * accumulatedRewardsPerShare / REWARDS_PRECISION;
+        rewardDebt[msg.sender] =
+            (gaugeBalances[msg.sender] * accumulatedRewardsPerShare) /
+            REWARDS_PRECISION;
         emit DepositLP(msg.sender, _amount);
     }
 
     // @notice Receives LP tokens back instead of Gauge
     // @param _amount Amount of Gauge tokens
     // @param _autoWithdraw If true remove all liquidity at the same tx
-    function withdrawLP(uint256 _amount, bool _autoWithdraw) external update notAllowContract {
-        require(gaugeBalances[msg.sender] >= _amount, "Not enough Gauge tokens");
+    function withdrawLP(uint256 _amount, bool _autoWithdraw)
+        external
+        update
+        notAllowContract
+    {
+        require(
+            gaugeBalances[msg.sender] >= _amount,
+            "Not enough Gauge tokens"
+        );
         require(_amount > 0, "Shoud be greater than zero");
 
         // allow the farm take the _amount of gauge
@@ -239,6 +308,8 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         totalStaked -= _amount;
         lpBalances[msg.sender] += receivedAmount;
 
+        rewardDebt[msg.sender] = gaugeBalances[msg.sender] * accumulatedRewardsPerShare / REWARDS_PRECISION;
+
         if (_autoWithdraw) {
             removeLiquidity(_amount);
         }
@@ -250,9 +321,13 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         uint256 stakedAmount = gaugeBalances[msg.sender];
 
         // calculates the user's share of the total number of awards and subtracts from it accumulated rewardDebt
-        uint256 rewardsToHarvest = (stakedAmount * accumulatedRewardsPerShare / REWARDS_PRECISION) - rewardDebt[msg.sender];
+        uint256 rewardsToHarvest = ((stakedAmount *
+            accumulatedRewardsPerShare) / REWARDS_PRECISION) -
+            rewardDebt[msg.sender];
 
-        rewardDebt[msg.sender] = stakedAmount * accumulatedRewardsPerShare / REWARDS_PRECISION;
+        rewardDebt[msg.sender] =
+            (stakedAmount * accumulatedRewardsPerShare) /
+            REWARDS_PRECISION;
 
         // collect user rewards that can be claimed
         rewards[msg.sender] += rewardsToHarvest;
@@ -265,17 +340,25 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         uint256 balBefore = srs.balanceOf(address(this));
         minter.mint(address(gauge));
         uint256 balAfter = srs.balanceOf(address(this));
-        uint256 receivedRewards = balAfter > balBefore ? balAfter - balBefore : 0;
+        uint256 receivedRewards = balAfter > balBefore
+            ? balAfter - balBefore
+            : 0;
         if (totalStaked == 0) return;
 
         // increases accumulated rewards per 1 staked token
-        accumulatedRewardsPerShare += receivedRewards * REWARDS_PRECISION / totalStaked;
+        accumulatedRewardsPerShare +=
+            (receivedRewards * REWARDS_PRECISION) /
+            totalStaked;
     }
 
     // @notice Convert LP tokens to nASTR/ASTR
     // @param _amount Number of LP tokens
-    // @return Array of ammounts. nASTR at idx 0, ASTR at idx 1.
-    function calculateRemoveLiquidity(uint256 _lpAmount) public view returns (uint256[] memory) {
+    // @return Array of ammounts. ASTR at idx 0, nASTR at idx 1.
+    function calculateRemoveLiquidity(uint256 _lpAmount)
+        public
+        view
+        returns (uint256[] memory)
+    {
         return pool.calculateRemoveLiquidity(_lpAmount);
     }
 
@@ -293,7 +376,7 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     // @notice Needs to check user rewards
     // @param _user User address
     // @return sum Amount of penging rewards
-    function pendingRewards(address _user) public view returns (uint256 sum) {
+    function pendingRewards(address _user) external view returns (uint256 sum) {
         uint256 stakedAmount = gaugeBalances[_user];
         if (stakedAmount > 0) {
             sum =
@@ -310,7 +393,9 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     // @param _user User's address
     function calc(address _user) external view returns (uint256 nShare) {
         uint256[] memory amounts = new uint256[](2);
-        amounts = pool.calculateRemoveLiquidity(lpBalances[_user] + gaugeBalances[_user]);
+        amounts = pool.calculateRemoveLiquidity(
+            lpBalances[_user] + gaugeBalances[_user]
+        );
         nShare = amounts[1];
     }
 

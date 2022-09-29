@@ -174,7 +174,7 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
 
     // @notice Needed for upgrade contract, by setting the initial values to added variables
     function initialize2() external onlyRole(MANAGER) {
-        require(!isCalled, "Allready called");
+        require(!isCalled, "Already called");
         isCalled = true;
         isUtility["LiquidStaking"] = true;
         isUtility["null"] = true;
@@ -315,7 +315,7 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
     function setUtilityStatus(uint256 _id, bool _state)
         public
         onlyRole(DEFAULT_ADMIN_ROLE)
-    {   
+    {
         require(_id < utilityDB.length, "Not found utility with such id");
         utilityDB[_id].isActive = _state;
         emit SetUtilityStatus(_id, _state, utilityDB[_id].utilityName);
@@ -327,7 +327,7 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
     function setDntStatus(uint256 _id, bool _state)
         public
         onlyRole(DEFAULT_ADMIN_ROLE)
-    {   
+    {
         require(_id < dntDB.length, "Not found dnt with such id");
         dntDB[_id].isActive = _state;
         emit SetDntStatus(_id, _state, dntDB[_id].dntName);
@@ -369,7 +369,7 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
         public
         dntInterface(_dnt)
         returns (uint256)
-    {   
+    {
         require(_user != address(0), "Shouldn't be zero address");
         return DNTContract.balanceOf(_user);
     }
@@ -512,10 +512,10 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
 
         users[_account].dnt[_dnt].dntInUtil[_utility] -= _amount;
 
-        // if user balance in util is zero, we need to update info about util and dnt 
+        // if user balance in util is zero, we need to update info about util and dnt
         if (users[_account].dnt[_dnt].dntInUtil[_utility] == 0) {
-            _removeDntFromUser(_dnt, users[_account].userDnts, _account);
-            _removeUtilityFromUser(_utility, users[_account].userUtilities, _account);
+            if (userHasDnt[_account][_dnt]) _removeDntFromUser(_dnt, users[_account].userDnts, _account);
+            if (userHasUtility[_account][_utility]) _removeUtilityFromUser(_utility, users[_account].userUtilities, _account);
             userHasDnt[_account][_dnt] = false;
             userHasUtility[_account][_utility] = false;
         }
