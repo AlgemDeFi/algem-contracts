@@ -5,23 +5,23 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import "./interfaces/IPancakeRouter01.sol";
-import "./interfaces/IMasterChef.sol";
-import "./interfaces/IPancakePair.sol";
+import "./interfaces/IZenlinkRouter.sol";
+import "./interfaces/IZenlinkFarm.sol";
+import "./interfaces/IZenlinkPair.sol";
 import "./interfaces/IPartnerHandler.sol";
 
-contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPartnerHandler {
+contract ZenlinkAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPartnerHandler {
     using SafeERC20Upgradeable for IERC20Upgradeable;
     using AddressUpgradeable for address;
     using AddressUpgradeable for address payable;
 
     //Interfaces
-    IMasterChef public farm;
-    IPancakeRouter01 public pool;
+    IZenlinkFarm public farm;
+    IZenlinkRouter public pool;
     IERC20Upgradeable public lp;
-    IPancakePair public pair;
+    IZenlinkPair public pair;
     IERC20Upgradeable public nToken;
-    IERC20Upgradeable public arswToken;
+    IERC20Upgradeable public zlkToken;
 
     uint256 public constant REVENUE_FEE = 10; // 10% of claimed rewards goes to revenue pool
     uint256 public constant SLIPPAGE_CONTROL = 8; // 0.8% of amounts to slippage control. Same values as in the Arthswap pool
@@ -64,14 +64,23 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
         address indexed user,
         uint256 indexed rewardsToHarvest
     );
+    event NotClaimable();
 
     // @notice Updates rewards
     modifier update() {
+
+        uint256 unclaimedRewards;
+        (uint256[] memory rewardsArr, ) = farm.pendingRewards(pid, address(this));
+        for (uint i; i < rewardsArr.length;) {
+            unclaimedRewards += rewardsArr[i];
+            unchecked { i++; }
+        }
+
         // check if there are unclaimed rewards
-        uint256 unclaimedRewards = farm.pendingARSW(pid, address(this));
         if (unclaimedRewards > 0) {
             updatePoolRewards();
         }
+
         harvestRewards();
         _;
     }
@@ -82,12 +91,12 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
     }
 
     function initialize(
-        IMasterChef _farm,
-        IPancakeRouter01 _pool,
+        IZenlinkFarm _farm,
+        IZenlinkRouter _pool,
         IERC20Upgradeable _nToken,
         IERC20Upgradeable _lp,
-        IPancakePair _pair,
-        IERC20Upgradeable _arswToken,
+        IZenlinkPair _pair,
+        IERC20Upgradeable _zlkToken,
         uint256 _pid
     ) public initializer {
         __Ownable_init();
@@ -97,7 +106,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
         lp = _lp;
         nToken = _nToken;
         pair = _pair;
-        arswToken = _arswToken;
+        zlkToken = _zlkToken;
         pid = _pid;
     }
 
@@ -110,13 +119,13 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
     // @param _amount Amount of funds to withdraw
     function withdrawRevenue(uint256 _amount) external onlyOwner {
         require(
-            arswToken.balanceOf(address(this)) >= _amount,
-            "Not enough ARSW revenue"
+            zlkToken.balanceOf(address(this)) >= _amount,
+            "Not enough ZLK revenue"
         );
         require(_amount > 0, "Should be greater than zero");
         require(revenuePool >= _amount, "Insufficient funds in the revenue pool");
         revenuePool -= _amount;
-        arswToken.safeTransfer(msg.sender, _amount);
+        zlkToken.safeTransfer(msg.sender, _amount);
     }
 
     // @notice Add liquidity to the pool with the given amounts of tokens
@@ -153,7 +162,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
 
         nToken.approve(address(pool), _amounts[1]);
 
-        (,, uint256 receivedLP) = pool.addLiquidityETH{value: msg.value}(
+        (,, uint256 receivedLP) = pool.addLiquidityNativeCurrency{value: msg.value}(
             address(nToken),
             _amounts[1],
             amountTokenMin,
@@ -198,9 +207,9 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
             ((astrPredicted * SLIPPAGE_CONTROL) / SLIPPAGE_PRECISION);
 
         // allow the pool take the _amount of lp
-        lp.approve(address(pool), _amount);
+        pair.approve(address(pool), _amount);
 
-        (uint amountToken, uint amountASTR) = pool.removeLiquidityETH(
+        (uint amountToken, uint amountASTR) = pool.removeLiquidityNativeCurrency(
             address(nToken),
             _amount,
             amountNASTRmin,
@@ -213,7 +222,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
 
         nToken.safeTransfer(msg.sender, amountToken);
 
-        payable(msg.sender).sendValue(amountASTR);
+        payable(msg.sender).sendValue(amountASTR); 
 
         emit RemoveLiquidity(msg.sender, _amount, amountASTR);
     }
@@ -237,7 +246,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
         depositLP(_amount);
     }
 
-    // @notice Deposit LP tokens to ARSW allocation
+    // @notice Deposit LP tokens to ZLK allocation
     // @param _amount Number of LP tokens
     function depositLP(uint256 _amount) public update {
         require(lpBalances[msg.sender] >= _amount, "Not enough LP tokens");
@@ -248,7 +257,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
         // allow the farm take the _amount of lp
         lp.approve(address(farm), _amount);
 
-        farm.deposit(pid, _amount, address(this));
+        farm.stake(pid, address(lp), _amount);
 
         depositedLp[msg.sender] += _amount;
         totalStakedLp += _amount;
@@ -278,7 +287,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
         totalStakedLp -= _amount;
 
         uint256 beforeLp = lp.balanceOf(address(this));
-        farm.withdraw(pid, _amount, address(this));
+        farm.redeem(pid, address(lp), _amount);
         uint256 afterLp = lp.balanceOf(address(this));
         uint256 receivedLp = afterLp - beforeLp;
 
@@ -312,15 +321,18 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
         emit HarvestRewards(msg.sender, rewardsToHarvest);
     }
 
-    // @notice Receives portion of total rewards in ARSW tokens from the farm contract
+    // @notice Receives portion of total rewards in ZLK tokens from the farm contract
     function updatePoolRewards() private {
         if (totalStakedLp == 0) return;
-        
-        uint256 beforeArsw = arswToken.balanceOf(address(this));
-        farm.harvest(pid, address(this));
-        uint256 afterArsw = arswToken.balanceOf(address(this));
-        uint256 receivedRewards = afterArsw > beforeArsw
-            ? afterArsw - beforeArsw
+        uint256 beforeZlk = zlkToken.balanceOf(address(this));
+        try farm.claim(pid) {}
+        catch {
+            emit NotClaimable();
+        }
+        uint256 afterZlk = zlkToken.balanceOf(address(this));
+
+        uint256 receivedRewards = afterZlk > beforeZlk
+            ? afterZlk - beforeZlk
             : 0;
 
         // increases accumulated rewards per 1 staked token
@@ -339,7 +351,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
         view
         returns (uint256[] memory)
     {
-        (uint256 reservesASTR, uint256 reservesNASTR) = _getSortedReserves();
+        (uint256 reservesASTR, uint256 reservesNASTR) = _getSortedReserves(pair);
         uint256 totalLpSupply = pair.totalSupply();
         uint256 nastrAmount = (_amount * reservesNASTR) / totalLpSupply;
         uint256 astrAmount = (_amount * reservesASTR) / totalLpSupply;
@@ -355,14 +367,14 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
         uint256 rewardsToClaim = rewards[msg.sender] - comissionPart;
         revenuePool += comissionPart;
         rewards[msg.sender] = 0;
-        arswToken.safeTransfer(msg.sender, rewardsToClaim);
+        zlkToken.safeTransfer(msg.sender, rewardsToClaim);
         emit Claim(msg.sender, rewardsToClaim);
     }
 
     // @notice Needs to check user rewards
     // @param _user User address
     // @return sum Amount of penging rewards
-    function pendingRewards(address _user) public view returns (uint256 sum) {
+    function pendingRewards(address _user) external view returns (uint256 sum) {
         uint256 stakedAmount = depositedLp[_user];
         if (stakedAmount > 0) {
             sum =
@@ -378,7 +390,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
     // @notice Get share of n tokens in pool for user
     // @param _user User's address
     function calc(address _user) external override view returns (uint256 nShare) {
-        (, uint256 nTokensReserves) = _getSortedReserves();
+        (, uint256 nTokensReserves) = _getSortedReserves(pair);
         nShare =
             ((lpBalances[_user] + depositedLp[_user]) * nTokensReserves) /
             pair.totalSupply();
@@ -386,7 +398,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
 
     // @notice Disabled functionality to renounce ownership
     function renounceOwnership() public override onlyOwner {
-        revert("It is not possible to renounce ownership");
+        revert("It is not possible to renounce ownership at all");
     }
 
     // @notice Calculates amount of second token with the same value
@@ -399,32 +411,69 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
         view
         returns (uint256 sum)
     {   
-        (uint256 reserve0, uint256 reserve1) = _getSortedReserves();
+        (uint256 astr, uint256 nastr) = _getSortedReserves(pair);
         sum = _isAstr
-            ? pool.quote(_amount, reserve0, reserve1)
-            : pool.quote(_amount, reserve1, reserve0);
+            ? _amount * nastr / astr
+            : _amount * astr / nastr;
     }
 
     // @notice Technical function, that shadows depositedLp functionality
     //         Needed to using the same abi for all adapters
     // @return Amount of depoposited LP by user
-    function gaugeBalances(address _user) public view returns (uint256) {
+    function gaugeBalances(address _user) external view returns (uint256) {
         return depositedLp[_user];
     }
 
     // @notice To get total amount of locked tokens in pool for front-end
     // @return Total amount of tokens in pool
-    function totalReserves() public view returns (uint256 sum) {
-        (uint256 astr, uint256 nastr) = _getSortedReserves();
+    function totalReserves() external view returns (uint256 sum) {
+        (uint256 astr, uint256 nastr) = _getSortedReserves(pair);
         sum = nastr + astr;
     }
 
     // @notice To get sorted reserves. WASTR will always at first idx.
     // @param Pair address
     // @return Amount of tokens
-    function _getSortedReserves() private view returns (uint256 astr, uint256 nastr) {
-        address token0 = pair.token0();
-        (uint256 res0, uint256 res1, ) = pair.getReserves();
+    function _getSortedReserves(IZenlinkPair _pair) private view returns (uint256 astr, uint256 nastr) {
+        address token0 = _pair.token0();
+        (uint256 res0, uint256 res1, ) = _pair.getReserves();
         return token0 == WASTR ? (res0, res1) : (res1, res0);
+    }
+
+    // @notice Used for getting apr and tvl info
+    // @param astrprice Actual rate ASTR to USD
+    // @return tvl Total locked value
+    // @return apr Annual Percentage Rate
+    function getInfo(
+        uint256 astrPrice
+    ) external view returns (uint256 tvl, uint256 apr) {
+        require(astrPrice > 0, "Zero address alarm");
+        IZenlinkPair zlkAstrPair = IZenlinkPair(0xba75fD35762e1dA55bc1893B3c0845BEee833d52);
+        uint256 PRICE_PRECISION = 10000;
+
+        // get rewards per block for current pool
+        (,,,uint256[] memory rewardsPerBlock,,,,) = farm.getPoolInfo(0);
+        uint256 zlkPerBlock = rewardsPerBlock[0];
+
+        // get zlk price`
+        (uint256 astrRsrws, uint256 zlkRsrws) = _getSortedReserves(zlkAstrPair);
+        uint256 zlkPrice = astrPrice * astrRsrws * PRICE_PRECISION / zlkRsrws;
+
+        // get tvl
+        (uint256 astrReserves, ) = _getSortedReserves(pair);
+        tvl = astrReserves * 2 * astrPrice / 1e18;
+
+        apr = (zlkPerBlock * (365 * 24 * 3600 / 12) * zlkPrice / 1e18 / PRICE_PRECISION + tvl) * 1e18 / tvl;
+    }
+
+    // @notice Used to calculate LP amount by giving nASTR and ASTR
+    // @param _amounts Amounts of tokens. ASTR amount at idx 0
+    // @return LP amount
+    function getLpAmount(uint256[] memory _amounts) external view returns (uint256 amount) {
+        (uint256 astrRsrvs, uint256 nastrRsrvs) = _getSortedReserves(pair);
+        uint256 totalSupply = pair.totalSupply();
+        uint256 shareNastr = _amounts[1] * totalSupply / nastrRsrvs;
+        uint256 shareAstr = _amounts[0] * totalSupply / astrRsrvs;
+        return shareNastr < shareAstr ? shareNastr : shareAstr;
     }
 }

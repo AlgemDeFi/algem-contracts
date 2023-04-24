@@ -3,8 +3,8 @@ pragma solidity 0.8.4;
 
 // @notice DNT token contract interface
 interface IDNT {
-  function        mintNote(address to, uint256 amount) external;
-  function        burnNote(address account, uint256 amount) external;
+  function        mintNote(address to, uint256 amount, string memory utility) external;
+  function        burnNote(address account, uint256 amount, string memory utility) external;
   function        snapshot() external returns (uint256);
   function        pause() external;
   function        unpause() external;

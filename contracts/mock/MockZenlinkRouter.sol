@@ -4,7 +4,7 @@ pragma solidity 0.8.4;
 import "./MockERC20.sol";
 import "./libraries/Math.sol";
 
-contract MockArthswapRouter {
+contract MockZenlinkRouter {
     MockERC20 public lp;
     MockERC20 public nastr;
 
@@ -18,7 +18,7 @@ contract MockArthswapRouter {
         reservesT = 100 ether;
     }
 
-    function addLiquidityETH(
+    function addLiquidityNativeCurrency(
         address token,
         uint amountTokenDesired,
         uint amountTokenMin,
@@ -42,7 +42,7 @@ contract MockArthswapRouter {
         return (amountToken, amountETH, liquidity);
     }
 
-    function removeLiquidityETH(
+    function removeLiquidityNativeCurrency(
         address token,
         uint liquidity,
         uint amountTokenMin,
