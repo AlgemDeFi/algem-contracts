@@ -5,6 +5,7 @@ import "hardhat-deploy";
 import '@typechain/hardhat'
 import "@nomicfoundation/hardhat-toolbox";
 import "./tasks/index";
+import "@nomicfoundation/hardhat-foundry";
 
 import * as dotenv from "dotenv";
 

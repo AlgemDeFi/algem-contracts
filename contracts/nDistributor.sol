@@ -6,6 +6,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "./interfaces/IDNT.sol";
 import "./interfaces/ILiquidStaking.sol";
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 
 /*
  * @notice ERC20 DNT token distributor contract
@@ -114,9 +115,18 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
     // @notice needed to show if the user has utility
     mapping(address => mapping(string => bool)) public userHasUtility;
 
-    // @notice needs for fast search in array
     mapping(address => mapping(string => uint256)) public userUtitliesIdx;
     mapping(address => mapping(string => uint256)) public userDntsIdx;
+
+    // @notice needed to implement grant/claim ownership pattern
+    address private _grantedOwner;
+
+    mapping(string => uint256) public totalDnt;
+
+    // @notice needed to update user utility indices
+    mapping(address => bool) utilityIdxsUpdated;
+
+    bytes32 public constant MANAGER_CONTRACT = keccak256("MANAGER_CONTRACT");
 
     event Transfer(
         address indexed _from,
@@ -131,34 +141,26 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
         string _utility,
         string indexed _dnt
     );
-    event AddDnt(string indexed newDnt, address indexed dntAddress);
+
     event ChangeDntAddress(string indexed dnt, address indexed addr);
     event SetUtilityStatus(uint256 indexed id, bool indexed state, string indexed utilityName);
     event SetDntStatus(uint256 indexed id, bool indexed state, string indexed dntName);
     event SetLiquidStaking(address indexed liquidStakingAddress);
     event TransferDntContractOwnership(address indexed to, string indexed dnt);
     event AddUtility(string indexed newUtility);
+    event OwnershipTransferred(address indexed owner, address indexed grantedOwner);
 
     using AddressUpgradeable for address;
-
-    // MODIFIERS
-    //
-    // -------------------------------------------------------------------------------------------------------
-    // ------------------------------- MODIFIERS
-    // -------------------------------------------------------------------------------------------------------
-    modifier dntInterface(string memory _dnt) {
-        _setDntInterface(_dnt);
-        _;
-    }
+    using StringsUpgradeable for string;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    // FUNCTIONS
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(MANAGER, msg.sender);
         owner = msg.sender;
 
         // empty utility needs to start indexing from 1 instead of 0
@@ -172,51 +174,56 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
         utilities.push("null");
     }
 
-    // @notice Needed for upgrade contract, by setting the initial values to added variables
-    function initialize2() external onlyRole(MANAGER) {
-        require(!isCalled, "Already called");
-        isCalled = true;
-        isUtility["LiquidStaking"] = true;
-        isUtility["null"] = true;
+    // -------------------------------------------------------------------------------------------------------
+    // ------------------------------- MODIFIERS
+    // -------------------------------------------------------------------------------------------------------
+    modifier dntInterface(string memory _dnt) {
+        _setDntInterface(_dnt);
+        _;
     }
 
     // -------------------------------------------------------------------------------------------------------
     // ------------------------------- Role managment
     // -------------------------------------------------------------------------------------------------------
 
-    // @notice changes owner roles
-    // @param  [address] _newOwner => new contract owner
-    function changeOwner(address _newOwner)
-        external
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
+    /// @notice propose a new owner
+    /// @param _newOwner => new contract owner
+    function grantOwnership(address _newOwner) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_newOwner != address(0), "Zero address alarm!");
         require(_newOwner != owner, "Trying to set the same owner");
-        _revokeRole(DEFAULT_ADMIN_ROLE, owner);
-        _grantRole(DEFAULT_ADMIN_ROLE, _newOwner);
-        owner = _newOwner;
+        _grantedOwner = _newOwner;
     }
 
-    // @notice returns the list of all managers
+    /// @notice claim ownership by granted address
+    function claimOwnership() external {
+        require(_grantedOwner == msg.sender, "Caller is not the granted owner");
+        _revokeRole(DEFAULT_ADMIN_ROLE, owner);
+        _grantRole(DEFAULT_ADMIN_ROLE, _grantedOwner);
+        owner = _grantedOwner;
+        _grantedOwner = address(0);
+        emit OwnershipTransferred(owner, _grantedOwner);
+    }
+
+    /// @notice returns the list of all managers
     function listManagers() external view returns (address[] memory) {
         return managers;
     }
 
-    // @notice adds manager role
-    // @param  [address] _newManager => new manager to add
+    /// @notice adds manager role
+    /// @param _newManager => new manager to add
     function addManager(address _newManager)
         public
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
         require(_newManager != address(0), "Zero address alarm!");
-        require(!hasRole(MANAGER, _newManager), "Already manager");
+        require(!hasRole(MANAGER, _newManager), "Allready manager");
         managerIds[_newManager] = managers.length;
         managers.push(_newManager);
         _grantRole(MANAGER, _newManager);
     }
 
-    // @notice removes manager role
-    // @param  [address] _newManager => new manager to remove
+    /// @notice removes manager role
+    /// @param _manager => new manager to remove
     function removeManager(address _manager)
         public
         onlyRole(DEFAULT_ADMIN_ROLE)
@@ -230,11 +237,12 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
 
         _revokeRole(MANAGER, _manager);
         managerIds[_manager] = 0;
+        managerIds[managers[id]] = id;
     }
 
-    // @notice removes manager role
-    // @param  [address] _oldAddress => old manager address
-    // @param  [address] _newAddress => new manager address
+    /// @notice removes manager role
+    /// @param _oldAddress => old manager address
+    /// @param _newAddress => new manager address
     function changeManagerAddress(address _oldAddress, address _newAddress)
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
@@ -244,32 +252,39 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
         addManager(_newAddress);
     }
 
-    function addUtilityToDisalowList(string memory _utility)
-        public
+    function addUtilityToDisallowList(string memory _utility)
+        external
         onlyRole(MANAGER)
     {
         disallowList[_utility] = true;
+    }
+
+    function removeUtilityFromDisallowList(string memory _utility)
+        public
+        onlyRole(MANAGER)
+    {
+        disallowList[_utility] = false;
     }
 
     // -------------------------------------------------------------------------------------------------------
     // ------------------------------- Asset managment (utilities and DNTs tracking)
     // -------------------------------------------------------------------------------------------------------
 
-    // @notice returns the list of all utilities
+    /// @notice returns the list of all utilities
     function listUtilities() external view returns (string[] memory) {
         return utilities;
     }
 
-    // @notice returns the list of all DNTs
+    /// @notice returns the list of all DNTs
     function listDnts() external view returns (string[] memory) {
         return dnts;
     }
 
-    // @notice adds new utility to the DB, activates it by default
-    // @param  [string] _newUtility => name of the new utility
+    /// @notice adds new utility to the DB, activates it by default
+    /// @param _newUtility => name of the new utility
     function addUtility(string memory _newUtility)
         external
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        onlyRole(MANAGER)
     {
         require(!isUtility[_newUtility], "Utility already added");
         uint lastId = utilityDB.length;
@@ -277,100 +292,113 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
         utilityDB.push(Utility(_newUtility, true));
         utilities.push(_newUtility);
         isUtility[_newUtility] = true;
+
         emit AddUtility(_newUtility);
     }
 
-    // @notice adds new DNT to the DB, activates it by default
-    // @param  [string] _newDnt => name of the new DNT
-    function addDnt(string memory _newDnt, address _dntAddress)
-        external
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
-        require(_dntAddress.isContract(), "_dntaddress should be contract");
-        require(dntContracts[_newDnt] != _dntAddress, "Dnt already added");
-        uint lastId = dntDB.length;
-
-        dntId[_newDnt] = lastId;
-        dntDB.push(Dnt(_newDnt, true));
-        dnts.push(_newDnt);
-        dntContracts[_newDnt] = _dntAddress;
-        emit AddDnt(_newDnt, _dntAddress);
-    }
-
-    // @notion allows to change DNT asset contract address
-    // @param  [string] _dnt => name of the DNT
-    // @param  [address] _address => new address
+    /// @notice allows to change DNT asset contract address
+    /// @param _dnt => name of the DNT
+    /// @param _address => new address
     function changeDntAddress(string memory _dnt, address _address)
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
         require(_address.isContract(), "_address should be contract address");
         dntContracts[_dnt] = _address;
+
         emit ChangeDntAddress(_dnt, _address);
     }
 
-    // @notice allows to activate\deactivate utility
-    // @param  [uint256] _id => utility id
-    // @param  [bool] _state => desired state
+    /// @notice allows to activate\deactivate utility
+    /// @param _id => utility id
+    /// @param _state => desired state
     function setUtilityStatus(uint256 _id, bool _state)
-        public
+        external
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
-        require(_id < utilityDB.length, "Not found utility with such id");
+        require(_id < utilityDB.length, "Not found utility with such id!");
         utilityDB[_id].isActive = _state;
         emit SetUtilityStatus(_id, _state, utilityDB[_id].utilityName);
     }
 
-    // @notice allows to activate\deactivate DNT
-    // @param  [uint256] _id => DNT id
-    // @param  [bool] _state => desired state
+    /// @notice allows to activate\deactivate DNT
+    /// @param _id => DNT id
+    /// @param _state => desired state
     function setDntStatus(uint256 _id, bool _state)
-        public
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE) 
     {
         require(_id < dntDB.length, "Not found dnt with such id");
         dntDB[_id].isActive = _state;
         emit SetDntStatus(_id, _state, dntDB[_id].dntName);
     }
 
-    // @notice returns a list of user's DNT tokens in possession
-    // @param  [address] _user => user address
-    function listUserDnts(address _user) public view returns (string[] memory) {
+    /// @notice returns a list of user's DNT tokens in possession
+    /// @param _user => user address
+    /// @return userDnts => all user dnts
+    function listUserDnts(address _user) external view returns (string[] memory) {
+        require(_user != address(0), "Shouldn't be zero address");
+
+
         return users[_user].userDnts;
     }
 
-    // @notice returns ammount of DNT toknes of user in utility
-    // @param  [address] _user => user address
-    // @param  [string] _util => utility name
-    // @param  [string] _dnt => DNT token name
+    /// @notice returns user utilities by DNT
+    /// @param _user => user address
+    /// @param _dnt => dnt name
+    /// @return userUtils => all user utils in dnt
+    function listUserUtilitiesInDnt(address _user, string memory _dnt) public view returns (string[] memory) {
+        require(_user != address(0), "Shouldn't be zero address");
+
+        return users[_user].dnt[_dnt].userUtils;
+    }
+
+    /// @notice returns user dnt balances in utilities
+    /// @param _user => user address
+    /// @param _dnt => dnt name
+    /// @return dntBalances => dnt balances in utils
+    /// @return usrUtils => all user utils in dnt
+    function listUserDntInUtils(address _user, string memory _dnt) external view returns (string[] memory, uint256[] memory) {
+        require(_user != address(0), "Shouldn't be zero address");
+
+        string[] memory _utilities = listUserUtilitiesInDnt(_user, _dnt);
+
+        uint256 l = _utilities.length;
+        require(l > 0, "Have no used utilities");
+
+        DntAsset storage _dntAsset = users[_user].dnt[_dnt];
+        uint256[] memory _dnts = new uint256[](l);
+
+        for (uint256 i; i < l; i++) {
+            _dnts[i] = _dntAsset.dntInUtil[_utilities[i]];
+        }
+        return (_utilities, _dnts);
+    }
+
+    /// @notice returns ammount of DNT toknes of user in utility
+    /// @param _user => user address
+    /// @param _util => utility name
+    /// @param _dnt => DNT token name
+    /// @return dntBalance => user dnt balance in util
     function getUserDntBalanceInUtil(
         address _user,
         string memory _util,
         string memory _dnt
-    ) public view returns (uint256) {
+    ) external view returns (uint256) {
+        require(_user != address(0), "Shouldn't be zero address");
         return users[_user].dnt[_dnt].dntInUtil[_util];
     }
 
-    // @notice returns which utilities are used with specific DNT token
-    // @param  [address] _user => user address
-    // @param  [string] _dnt => DNT token name
-    function getUserUtilsInDnt(address _user, string memory _dnt)
-        public
-        view
-        returns (string[] memory)
-    {
-        return users[_user].dnt[_dnt].userUtils;
-    }
 
-    // @notice returns user's DNT balance
-    // @param  [address] _user => user address
-    // @param  [string] _dnt => DNT token name
+    /// @notice returns user's DNT balance
+    /// @param _user => user address
+    /// @param _dnt => DNT token name
+    /// @return dntBalance => current user balance in dnt
     function getUserDntBalance(address _user, string memory _dnt)
-        public
+        external
         dntInterface(_dnt)
         returns (uint256)
     {
-        require(_user != address(0), "Shouldn't be zero address");
         return DNTContract.balanceOf(_user);
     }
 
@@ -378,17 +406,44 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
     // ------------------------------- Distribution logic
     // -------------------------------------------------------------------------------------------------------
 
-    // @notice issues new tokens
-    // @param  [address] _to => token recepient
-    // @param  [uint256] _amount => amount of tokens to mint
-    // @param  [string] _utility => minted dnt utility
-    // @param  [string] _dnt => minted dnt
+    /// @notice add to user dnt and util if he doesn't have them
+    /// @param _to => user address
+    /// @param _dnt => dnt name
+    /// @param _utility => util name
+    function _addToUser(
+        address _to, 
+        string memory _dnt, 
+        string memory _utility
+    ) internal {
+        if (!userHasDnt[_to][_dnt]) _addDntToUser(_dnt, users[_to].userDnts, _to);
+        if (!userHasUtility[_to][_utility]) _addUtilityToUser(_utility, _dnt, _to);
+    }
+
+    /// @notice remove from user dnt and util if he has them
+    /// @param _account => user address
+    /// @param _dnt => dnt name
+    /// @param _utility => util name
+    function _removeFromUser(
+        address _account, 
+        string memory _dnt, 
+        string memory _utility
+    ) internal {
+        if (userHasUtility[_account][_utility]) _removeUtilityFromUser(_utility, _dnt, _account);
+        if (userHasDnt[_account][_dnt] && users[_account].dnt[_dnt].userUtils.length == 0) _removeDntFromUser(_dnt, users[_account].userDnts, _account);
+    }
+
+    /// @notice issues new tokens
+    /// @param _to => token recepient
+    /// @param _amount => amount of tokens to mint
+    /// @param _utility => minted dnt utility
+    /// @param _dnt => minted dnt
     function issueDnt(
         address _to,
         uint256 _amount,
         string memory _utility,
         string memory _dnt
     ) external dntInterface(_dnt) {
+        require(_amount > 0, "Amount should be greater than zero");
         require(_to != address(0), "Zero address alarm!");
         require(msg.sender == address(liquidStaking), "Only for LiquidStaking");
         require(
@@ -396,84 +451,82 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
             "Invalid utility!"
         );
 
-        if (!userHasDnt[_to][_dnt]) {
-            _addDntToUser(_dnt, users[_to].userDnts, _to);
-            userHasDnt[_to][_dnt] = true;
-        }
-        if (!userHasUtility[_to][_utility]) {
-            _addUtilityToUser(_utility, users[_to].userUtilities, _to);
-            _addUtilityToUser(_utility, users[_to].dnt[_dnt].userUtils, _to);
-            userHasUtility[_to][_utility] = true;
-        }
-
-        users[_to].dnt[_dnt].dntInUtil[_utility] += _amount;
-        DNTContract.mintNote(_to, _amount);
-
+        totalDnt[_dnt] += _amount;
         totalDntInUtil[_utility] += _amount;
-        liquidStaking.addToBuffer(_to, _amount);
+
+        DNTContract.mintNote(_to, _amount, _utility);
 
         emit IssueDnt(_to, _amount, _utility, _dnt);
     }
 
-    // @notice issues new transfer tokens
-    // @param  [address] _to => token recepient
-    // @param  [uint256] _amount => amount of tokens to mint
-    // @param  [string] _utility => minted dnt utility
-    // @param  [string] _dnt => minted dnt
+    /// @notice issues new transfer tokens
+    /// @param _to => token recepient
+    /// @param _amount => amount of tokens to mint
+    /// @param _utility => minted dnt utility
+    /// @param _dnt => minted dnt
     function issueTransferDnt(
         address _to,
         uint256 _amount,
         string memory _utility,
         string memory _dnt
     ) private dntInterface(_dnt) {
+        require(_amount > 0, "Amount should be greater than zero");
         require(_to != address(0), "Zero address alarm!");
         require(
             utilityDB[utilityId[_utility]].isActive == true,
             "Invalid utility!"
         );
 
+        _addToUser(_to, _dnt, _utility);
+        
         users[_to].dnt[_dnt].dntInUtil[_utility] += _amount;
+        liquidStaking.updateUserBalanceInUtility(_utility, _to);
     }
 
-    // @notice adds dnt string to user array of dnts for tracking which assets are in possession
-    // @param  [string] _dnt => name of the dnt token
-    // @param  [string[] ] localUserDnts => array of user's dnts
+
+    /// @notice adds dnt string to user array of dnts for tracking which assets are in possession
+    /// @param _dnt => name of the dnt token
+    /// @param localUserDnts => array of user's dnts
     function _addDntToUser(string memory _dnt, string[] storage localUserDnts, address _user)
         internal
         onlyRole(MANAGER)
     {
         require(dntDB[dntId[_dnt]].isActive == true, "Invalid DNT!");
+        userHasDnt[_user][_dnt] = true;
 
         localUserDnts.push(_dnt);
         userDntsIdx[_user][_dnt] = localUserDnts.length - 1;
     }
 
-    // @notice adds utility string to user array of utilities for tracking which assets are in possession
-    // @param  [string] _utility => name of the utility token
-    // @param  [string[] ] localUserUtilities => array of user's utilities
+    /// @notice adds utility string to user array of utilities for tracking which assets are in possession
+    /// @param _utility => name of the utility token
+    /// @param _dnt => dnt name
     function _addUtilityToUser(
         string memory _utility,
-        string[] storage localUserUtilities,
+        string memory _dnt,
         address _user
     ) internal onlyRole(MANAGER) {
         uint id = utilityId[_utility];
         require(utilityDB[id].isActive == true, "Invalid utility!");
 
-        localUserUtilities.push(_utility);
-        userUtitliesIdx[_user][_utility] = localUserUtilities.length - 1;
+        userHasUtility[_user][_utility] = true;
+
+        users[_user].dnt[_dnt].userUtils.push(_utility);
+        userUtitliesIdx[_user][_utility] = users[_user].dnt[_dnt].userUtils.length - 1;
     }
 
-    // @notice removes tokens from circulation
-    // @param  [address] _account => address to burn from
-    // @param  [uint256] _amount => amount of tokens to burn
-    // @param  [string] _utility => minted dnt utility
-    // @param  [string] _dnt => minted dnt
+    /// @notice removes tokens from circulation
+    /// @param _account => address to burn from
+    /// @param _amount => amount of tokens to burn
+    /// @param _utility => minted dnt utility
+    /// @param _dnt => minted dnt
     function removeDnt(
         address _account,
         uint256 _amount,
         string memory _utility,
         string memory _dnt
-    ) external onlyRole(MANAGER) dntInterface(_dnt) {
+    ) external onlyRole(MANAGER_CONTRACT) dntInterface(_dnt) {
+        require(_amount > 0, "Amount should be greater than zero");
         require(
             utilityDB[utilityId[_utility]].isActive == true,
             "Invalid utility!"
@@ -483,23 +536,25 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
             users[_account].dnt[_dnt].dntInUtil[_utility] >= _amount,
             "Not enough DNT in utility!"
         );
-
+        
+        totalDnt[_dnt] -= _amount;
         totalDntInUtil[_utility] -= _amount;
 
-        DNTContract.burnNote(_account, _amount);
+        DNTContract.burnNote(_account, _amount, _utility);
     }
 
-    // @notice removes transfer tokens from circulation
-    // @param  [address] _account => address to burn from
-    // @param  [uint256] _amount => amount of tokens to burn
-    // @param  [string] _utility => minted dnt utility
-    // @param  [string] _dnt => minted dnt
+    /// @notice removes transfer tokens from circulation
+    /// @param _account => address to burn from
+    /// @param _amount => amount of tokens to burn
+    /// @param _utility => minted dnt utility
+    /// @param _dnt => minted dnt
     function removeTransferDnt(
         address _account,
         uint256 _amount,
         string memory _utility,
         string memory _dnt
     ) private dntInterface(_dnt) {
+        require(_amount > 0, "Amount should be greater than zero");
         require(
             utilityDB[utilityId[_utility]].isActive == true,
             "Invalid utility!"
@@ -511,34 +566,48 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
         );
 
         users[_account].dnt[_dnt].dntInUtil[_utility] -= _amount;
+        liquidStaking.updateUserBalanceInUtility(_utility, _account);
 
         // if user balance in util is zero, we need to update info about util and dnt
         if (users[_account].dnt[_dnt].dntInUtil[_utility] == 0) {
-            if (userHasDnt[_account][_dnt]) _removeDntFromUser(_dnt, users[_account].userDnts, _account);
-            if (userHasUtility[_account][_utility]) _removeUtilityFromUser(_utility, users[_account].userUtilities, _account);
-            userHasDnt[_account][_dnt] = false;
-            userHasUtility[_account][_utility] = false;
+            _removeFromUser(_account, _dnt, _utility);
         }
+
     }
 
-    // @notice removes utility string from user array of utilities
-    // @param  [string] _utility => name of the utility token
-    // @param  [string[] ] localUserUtilities => array of user's utilities
+    /// @notice removes utility string from user array of utilities
+    /// @param _utility => name of the utility token
+    /// @param _dnt => dnt name
     function _removeUtilityFromUser(
         string memory _utility,
-        string[] storage localUserUtilities,
+        string memory _dnt,
         address _user
     ) internal onlyRole(MANAGER) {
-        uint lastIdx = localUserUtilities.length - 1;
-        uint idx = userUtitliesIdx[_user][_utility];
+        string[] storage utils =  users[_user].dnt[_dnt].userUtils;
+        uint256 lastIdx = utils.length - 1;
 
-        localUserUtilities[idx] = localUserUtilities[lastIdx];
-        localUserUtilities.pop();
+        // update userUtitliesIdx for user utils if needed
+        if (!utilityIdxsUpdated[_user]) {
+            for (uint256 i; i < utils.length; i++) {
+                string memory utilName = utils[i];
+                userUtitliesIdx[_user][utilName] = i;
+            }
+
+            utilityIdxsUpdated[_user] = true;
+        } 
+
+        userHasUtility[_user][_utility] = false;
+
+        uint256 idx = userUtitliesIdx[_user][_utility];
+        userUtitliesIdx[_user][utils[lastIdx]] = idx;
+
+        utils[idx] = utils[lastIdx];
+        utils.pop();
     }
 
-    // @notice removes DNT string from user array of DNTs
-    // @param  [string] _dnt => name of the DNT token
-    // @param  [string[] ] localUserDnts => array of user's DNTs
+    /// @notice removes DNT string from user array of DNTs
+    /// @param _dnt => name of the DNT token
+    /// @param localUserDnts => array of user's DNTs
     function _removeDntFromUser(
         string memory _dnt,
         string[] storage localUserDnts,
@@ -547,49 +616,91 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
         uint lastIdx = localUserDnts.length - 1;
         uint idx = userDntsIdx[_user][_dnt];
 
+        userHasDnt[_user][_dnt] = false;
+        
+        userDntsIdx[_user][localUserDnts[lastIdx]] = idx;
+
         localUserDnts[idx] = localUserDnts[lastIdx];
-        localUserDnts.pop();
+        localUserDnts.pop(); 
     }
 
-    // @notice transfers tokens between users
-    // @param  [address] _from => token sender
-    // @param  [address] _to => token recepient
-    // @param  [uint256] _amount => amount of tokens to send
-    // @param  [string] _utility => transfered dnt utility
-    // @param  [string] _dnt => transfered DNT
+    /// @notice sends the specified number of tokens from the specified utilities
+    /// @param _from => who sends
+    /// @param _to => who gets
+    /// @param _amounts => amounts of token
+    /// @param _utilities => utilities to transfer
+    /// @param _dnt => dnt to transfer
+    function multiTransferDnts(
+        address _from,
+        address _to,
+        uint256[] memory _amounts,
+        string[] memory _utilities,
+        string memory _dnt
+    ) external onlyRole(MANAGER_CONTRACT) returns (uint256) {
+        uint256 totalTransferAmount;
+        uint256 l = _utilities.length;
+        for (uint256 i; i < l; i++) {
+            if (_amounts[i] > 0) {
+                transferDnt(_from, _to, _amounts[i], _utilities[i], _dnt);
+                totalTransferAmount += _amounts[i];
+            }
+        }
+        return totalTransferAmount;
+    }
+
+    /// @notice sends the specified amount from all user utilities
+    /// @param _from => who sends
+    /// @param _to => who gets
+    /// @param _amount => amount of token
+    /// @param _dnt => dnt to transfer
+    function transferDnts(
+        address _from,
+        address _to,
+        uint256 _amount,
+        string memory _dnt
+    ) external onlyRole(MANAGER_CONTRACT) returns (string[] memory, uint256[] memory) {
+        string[] memory _utilities = users[_from].dnt[_dnt].userUtils;
+        uint256 l = _utilities.length;
+
+        uint256[] memory amounts = new uint256[](l);
+
+        for (uint256 i; i < l; i++) {
+            uint256 senderBalance = users[_from].dnt[_dnt].dntInUtil[_utilities[i]];
+            if (senderBalance > 0) {
+                uint256 takeFromUtility = _amount > senderBalance ? senderBalance : _amount;
+
+                transferDnt(_from, _to, takeFromUtility, _utilities[i], _dnt);
+                _amount -= takeFromUtility;
+                amounts[i] = takeFromUtility;
+
+                if (_amount == 0) return (_utilities, amounts);  
+            }          
+        }
+        revert("Not enough DNT");
+    }
+
+    /// @notice transfers tokens between users
+    /// @param _from => token sender
+    /// @param _to => token recepient
+    /// @param _amount => amount of tokens to send
+    /// @param _utility => transfered dnt utility
+    /// @param _dnt => transfered DNT
     function transferDnt(
         address _from,
         address _to,
         uint256 _amount,
         string memory _utility,
         string memory _dnt
-    ) external {
-        require(msg.sender == dntContracts[_dnt], "Allowed only for DNT contract");
-        uint senderBalance = users[_from].dnt[_dnt].dntInUtil[_utility];
-        uint senderBuffer = liquidStaking.buffer(
-            _from,
-            liquidStaking.currentEra()
-        );
-        require(senderBalance >= _amount, "Not enough DNT tokens in utility!");
-        require(_to != address(0), "Shouldn't be zero address");
-
-        liquidStaking.addToBuffer(_to, _amount);
-
-        // Checks if buffer bigger than rest sender tokens
-        // if it is true, set senders buffer
-        if (senderBalance - _amount < senderBuffer) {
-            liquidStaking.setBuffer(_from, senderBalance - _amount);
+    ) public onlyRole(MANAGER_CONTRACT) dntInterface(_dnt) {
+        if (_from == _to) return;
+        
+         // check needed so that during the burning of tokens, they are not issued to the zero address
+        if (_to != address(0)) {
+            liquidStaking.addStaker(_to, _utility);
+            issueTransferDnt(_to, _amount, _utility, _dnt);
         }
 
-        // checks if recepient of dnt already in stakers list
-        // add it to list if not
-        if (!liquidStaking.isStaker(_to)) {
-            liquidStaking.addStaker(_to, _utility, _dnt);
-        }
-
-        removeTransferDnt(_from, _amount, _utility, _dnt);
-        // check needed so that during the burning of tokens, they are not issued to the zero address
-        if (_to != address(0)) issueTransferDnt(_to, _amount, _utility, _dnt);
+        if (_from != address(0)) removeTransferDnt(_from, _amount, _utility, _dnt);
 
         emit Transfer(_from, _to, _amount, _utility, _dnt);
     }
@@ -598,9 +709,9 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
     // ------------------------------- Admin
     // -------------------------------------------------------------------------------------------------------
 
-    // @notice allows to specify DNT token contract address
-    // @param  [address] _contract => nASTR contract address
-    function _setDntInterface(string memory _dnt) internal onlyRole(MANAGER) {
+    /// @notice allows to specify DNT token contract address
+    /// @param _dnt => dnt name
+    function _setDntInterface(string memory _dnt) internal {
         address contractAddr = dntContracts[_dnt];
 
         require(contractAddr != address(0x00), "Invalid address!");
@@ -609,9 +720,9 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
         DNTContract = IDNT(contractAddr);
     }
 
-    // @notice allows to transfer ownership of the DNT contract
-    // @param  [address] _to => new owner
-    // @param  [string] _dnt => name of the dnt token contract
+    /// @notice allows to transfer ownership of the DNT contract
+    /// @param _to => new owner
+    /// @param _dnt => name of the dnt token contract
     function transferDntContractOwnership(address _to, string memory _dnt)
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
@@ -619,31 +730,29 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
     {
         require(_to != address(0), "Zero address alarm!");
         DNTContract.transferOwnership(_to);
+
         emit TransferDntContractOwnership(_to, _dnt);
     }
 
-    // @notice overrides required by Solidity
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(AccessControlUpgradeable)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
-    }
-
-    // @notice sets Liquid Staking contract
+    /// @notice sets Liquid Staking contract
     function setLiquidStaking(address _liquidStaking)
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
         require(_liquidStaking.isContract(), "_liquidStaking should be contract");
-        require(address(liquidStaking) == address(0), "Already set");
+
+        //revoke previous contract manager role if was set
+        if(address(liquidStaking) != address(0)) {
+            _revokeRole(MANAGER, address(liquidStaking));
+        }
+        
+        //require(address(liquidStaking) == address(0), "Already set");  // TODO: back
         liquidStaking = ILiquidStaking(_liquidStaking);
+        _grantRole(MANAGER, _liquidStaking);
         emit SetLiquidStaking(_liquidStaking);
     }
 
-    // @notice      disabled revoke ownership functionality
+    /// @notice      disabled revoke ownership functionality
     function revokeRole(bytes32 role, address account)
         public
         override
@@ -653,7 +762,7 @@ contract NDistributor is Initializable, AccessControlUpgradeable {
         _revokeRole(role, account);
     }
 
-    // @notice      disabled revoke ownership functionality
+    /// @notice      disabled revoke ownership functionality
     function renounceRole(bytes32 role, address account) public override {
         require(
             account == _msgSender(),

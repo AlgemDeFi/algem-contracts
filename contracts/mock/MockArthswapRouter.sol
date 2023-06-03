@@ -58,6 +58,7 @@ contract MockArthswapRouter {
         reservesT -= uint112(amountETH);
 
         lp.transferFrom(msg.sender, address(this), liquidity);
+        lp.burn(address(this), liquidity);
         nastr.transfer(msg.sender, amountToken);
         payable(msg.sender).transfer(amountETH);
     }
