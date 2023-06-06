@@ -1,0 +1,836 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "ADDRESSES_PROVIDER",
+      "outputs": [
+        {
+          "internalType": "contract ISio2LendingPoolAddressesProvider",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "LENDING_POOL",
+      "outputs": [
+        {
+          "internalType": "contract ISio2LendingPool",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "assets",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "amounts",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "premiums",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "address",
+          "name": "initiator",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes",
+          "name": "params",
+          "type": "bytes"
+        }
+      ],
+      "name": "executeOperation",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "ADDRESSES_PROVIDER()": "0542975c",
+    "LENDING_POOL()": "b4dcfc77",
+    "executeOperation(address[],uint256[],uint256[],address,bytes)": "920f5c84"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.4+commit.c7e474f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"ADDRESSES_PROVIDER\",\"outputs\":[{\"internalType\":\"contract ISio2LendingPoolAddressesProvider\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"LENDING_POOL\",\"outputs\":[{\"internalType\":\"contract ISio2LendingPool\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"assets\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"amounts\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256[]\",\"name\":\"premiums\",\"type\":\"uint256[]\"},{\"internalType\":\"address\",\"name\":\"initiator\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"params\",\"type\":\"bytes\"}],\"name\":\"executeOperation\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/FlashLoanReceiverBase.sol\":\"FlashLoanReceiverBase\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@ensdomains/=node_modules/@ensdomains/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/FlashLoanReceiverBase.sol\":{\"keccak256\":\"0x4738b750d78d8708dbed5b3df4386b2182cb74a45d8816561e5ded31f524754e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3c15f68aef875ae61975ff229ed8241018e2081acd221ba6ced68fdb55ef274a\",\"dweb:/ipfs/QmXEo6FYwRjYDA64BR3XUNJWM7zmgVTn1QE7rUBEeYn1eP\"]},\"contracts/interfaces/IFlashLoanReceiver.sol\":{\"keccak256\":\"0x08d2dfa23a7357ea05191d514c2d53fb334ba2f1a7ce5eff271a0f46ab32774b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f35c8dd62c2453a3d6f2a3a1859b1089139c76bdc8e4468151bc16787ced9138\",\"dweb:/ipfs/QmWiMtrrsqvmnob5dsd3uHdPnwervGKCxVrcvKPXxHm6uD\"]},\"contracts/interfaces/ISio2LendingPool.sol\":{\"keccak256\":\"0xad26d701963fa2f591100b06d2c3d561f30ae29134d43805a7e96885abcdb8c6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://742c4c559f25e89997012c4fd1534ebda465b104019f1b89819a8c30cedbe184\",\"dweb:/ipfs/QmXdv8dJzjmBkCAVBQjvK5qfdaBzW3se4EXXVYg4ofLw9a\"]},\"contracts/interfaces/ISio2LendingPoolAddressesProvider.sol\":{\"keccak256\":\"0xc77c215ab28b770f8ca485349b036a44f0d0b8f2205fafd8463aab7423b7fd19\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6e693d9ee4169a3cb8ef19e09937dbf55a8c9247155525ae741d150c7ef8de7f\",\"dweb:/ipfs/QmSJNA3m6UFqPWQo5YcC2S8K4AaJ7dXtFBSB3SoK1WJoAs\"]},\"contracts/libraries/DataTypes.sol\":{\"keccak256\":\"0x3cde2229a726374804961b8bc098f18a4ba04f05eb326b2fbf9974a235abbe17\",\"license\":\"BUSL-1.1\",\"urls\":[\"bzz-raw://1742e164d36ba14cec914342dc9753b9bd5fa7918dc1cb41391cd8ad42b79cac\",\"dweb:/ipfs/QmSVombN5m9h551dGhnDGad5VQVAGBQFeaN6Q6nnXc3XYs\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol\":{\"keccak256\":\"0x24b04b8aacaaf1a4a0719117b29c9c3647b1f479c5ac2a60f5ff1bb6d839c238\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://43e46da9d9f49741ecd876a269e71bc7494058d7a8e9478429998adb5bc3eaa0\",\"dweb:/ipfs/QmUtp4cqzf22C5rJ76AabKADquGWcjsc33yjYXxXC4sDvy\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34\",\"dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol\":{\"keccak256\":\"0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd\",\"dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol\":{\"keccak256\":\"0xf41ca991f30855bf80ffd11e9347856a517b977f0a6c2d52e6421a99b7840329\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b2717fd2bdac99daa960a6de500754ea1b932093c946388c381da48658234b95\",\"dweb:/ipfs/QmP6QVMn6UeA3ByahyJbYQr5M6coHKBKsf3ySZSfbyA8R7\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol\":{\"keccak256\":\"0x032807210d1d7d218963d7355d62e021a84bf1b3339f4f50be2f63b53cccaf29\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://11756f42121f6541a35a8339ea899ee7514cfaa2e6d740625fcc844419296aa6\",\"dweb:/ipfs/QmekMuk6BY4DAjzeXr4MSbKdgoqqsZnA8JPtuyWc6CwXHf\"]},\"node_modules/@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0xd6153ce99bcdcce22b124f755e72553295be6abcd63804cfdffceb188b8bef10\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://35c47bece3c03caaa07fab37dd2bb3413bfbca20db7bd9895024390e0a469487\",\"dweb:/ipfs/QmPGWT2x3QHcKxqe6gRmAkdakhbaRgx3DLzcakHz5M4eXG\"]},\"node_modules/@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.4+commit.c7e474f2"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "ADDRESSES_PROVIDER",
+          "outputs": [
+            {
+              "internalType": "contract ISio2LendingPoolAddressesProvider",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "LENDING_POOL",
+          "outputs": [
+            {
+              "internalType": "contract ISio2LendingPool",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "assets",
+              "type": "address[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "amounts",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "premiums",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "address",
+              "name": "initiator",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "params",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "executeOperation",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@ensdomains/=node_modules/@ensdomains/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/FlashLoanReceiverBase.sol": "FlashLoanReceiverBase"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/FlashLoanReceiverBase.sol": {
+        "keccak256": "0x4738b750d78d8708dbed5b3df4386b2182cb74a45d8816561e5ded31f524754e",
+        "urls": [
+          "bzz-raw://3c15f68aef875ae61975ff229ed8241018e2081acd221ba6ced68fdb55ef274a",
+          "dweb:/ipfs/QmXEo6FYwRjYDA64BR3XUNJWM7zmgVTn1QE7rUBEeYn1eP"
+        ],
+        "license": "MIT"
+      },
+      "contracts/interfaces/IFlashLoanReceiver.sol": {
+        "keccak256": "0x08d2dfa23a7357ea05191d514c2d53fb334ba2f1a7ce5eff271a0f46ab32774b",
+        "urls": [
+          "bzz-raw://f35c8dd62c2453a3d6f2a3a1859b1089139c76bdc8e4468151bc16787ced9138",
+          "dweb:/ipfs/QmWiMtrrsqvmnob5dsd3uHdPnwervGKCxVrcvKPXxHm6uD"
+        ],
+        "license": "MIT"
+      },
+      "contracts/interfaces/ISio2LendingPool.sol": {
+        "keccak256": "0xad26d701963fa2f591100b06d2c3d561f30ae29134d43805a7e96885abcdb8c6",
+        "urls": [
+          "bzz-raw://742c4c559f25e89997012c4fd1534ebda465b104019f1b89819a8c30cedbe184",
+          "dweb:/ipfs/QmXdv8dJzjmBkCAVBQjvK5qfdaBzW3se4EXXVYg4ofLw9a"
+        ],
+        "license": "MIT"
+      },
+      "contracts/interfaces/ISio2LendingPoolAddressesProvider.sol": {
+        "keccak256": "0xc77c215ab28b770f8ca485349b036a44f0d0b8f2205fafd8463aab7423b7fd19",
+        "urls": [
+          "bzz-raw://6e693d9ee4169a3cb8ef19e09937dbf55a8c9247155525ae741d150c7ef8de7f",
+          "dweb:/ipfs/QmSJNA3m6UFqPWQo5YcC2S8K4AaJ7dXtFBSB3SoK1WJoAs"
+        ],
+        "license": "MIT"
+      },
+      "contracts/libraries/DataTypes.sol": {
+        "keccak256": "0x3cde2229a726374804961b8bc098f18a4ba04f05eb326b2fbf9974a235abbe17",
+        "urls": [
+          "bzz-raw://1742e164d36ba14cec914342dc9753b9bd5fa7918dc1cb41391cd8ad42b79cac",
+          "dweb:/ipfs/QmSVombN5m9h551dGhnDGad5VQVAGBQFeaN6Q6nnXc3XYs"
+        ],
+        "license": "BUSL-1.1"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol": {
+        "keccak256": "0x24b04b8aacaaf1a4a0719117b29c9c3647b1f479c5ac2a60f5ff1bb6d839c238",
+        "urls": [
+          "bzz-raw://43e46da9d9f49741ecd876a269e71bc7494058d7a8e9478429998adb5bc3eaa0",
+          "dweb:/ipfs/QmUtp4cqzf22C5rJ76AabKADquGWcjsc33yjYXxXC4sDvy"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+        "keccak256": "0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b",
+        "urls": [
+          "bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34",
+          "dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
+        "keccak256": "0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca",
+        "urls": [
+          "bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd",
+          "dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol": {
+        "keccak256": "0xf41ca991f30855bf80ffd11e9347856a517b977f0a6c2d52e6421a99b7840329",
+        "urls": [
+          "bzz-raw://b2717fd2bdac99daa960a6de500754ea1b932093c946388c381da48658234b95",
+          "dweb:/ipfs/QmP6QVMn6UeA3ByahyJbYQr5M6coHKBKsf3ySZSfbyA8R7"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": {
+        "keccak256": "0x032807210d1d7d218963d7355d62e021a84bf1b3339f4f50be2f63b53cccaf29",
+        "urls": [
+          "bzz-raw://11756f42121f6541a35a8339ea899ee7514cfaa2e6d740625fcc844419296aa6",
+          "dweb:/ipfs/QmekMuk6BY4DAjzeXr4MSbKdgoqqsZnA8JPtuyWc6CwXHf"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/Address.sol": {
+        "keccak256": "0xd6153ce99bcdcce22b124f755e72553295be6abcd63804cfdffceb188b8bef10",
+        "urls": [
+          "bzz-raw://35c47bece3c03caaa07fab37dd2bb3413bfbca20db7bd9895024390e0a469487",
+          "dweb:/ipfs/QmPGWT2x3QHcKxqe6gRmAkdakhbaRgx3DLzcakHz5M4eXG"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": {
+        "keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
+        "urls": [
+          "bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92",
+          "dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/FlashLoanReceiverBase.sol",
+    "id": 1054,
+    "exportedSymbols": {
+      "FlashLoanReceiverBase": [
+        1053
+      ],
+      "IERC20": [
+        43859
+      ],
+      "IFlashLoanReceiver": [
+        7498
+      ],
+      "ISio2LendingPool": [
+        8581
+      ],
+      "ISio2LendingPoolAddressesProvider": [
+        8731
+      ],
+      "SafeERC20": [
+        44245
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:822:2",
+    "nodes": [
+      {
+        "id": 1009,
+        "nodeType": "PragmaDirective",
+        "src": "32:23:2",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 1011,
+        "nodeType": "ImportDirective",
+        "src": "57:69:2",
+        "nodes": [],
+        "absolutePath": "node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        "file": "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 1054,
+        "sourceUnit": 43782,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 1010,
+              "name": "IERC20",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "src": "65:6:2",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 1013,
+        "nodeType": "ImportDirective",
+        "src": "127:82:2",
+        "nodes": [],
+        "absolutePath": "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+        "file": "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 1054,
+        "sourceUnit": 44246,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 1012,
+              "name": "SafeERC20",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "src": "135:9:2",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 1015,
+        "nodeType": "ImportDirective",
+        "src": "210:71:2",
+        "nodes": [],
+        "absolutePath": "contracts/interfaces/IFlashLoanReceiver.sol",
+        "file": "./interfaces/IFlashLoanReceiver.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 1054,
+        "sourceUnit": 7499,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 1014,
+              "name": "IFlashLoanReceiver",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "src": "218:18:2",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 1017,
+        "nodeType": "ImportDirective",
+        "src": "282:101:2",
+        "nodes": [],
+        "absolutePath": "contracts/interfaces/ISio2LendingPoolAddressesProvider.sol",
+        "file": "./interfaces/ISio2LendingPoolAddressesProvider.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 1054,
+        "sourceUnit": 8732,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 1016,
+              "name": "ISio2LendingPoolAddressesProvider",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "src": "290:33:2",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 1019,
+        "nodeType": "ImportDirective",
+        "src": "384:67:2",
+        "nodes": [],
+        "absolutePath": "contracts/interfaces/ISio2LendingPool.sol",
+        "file": "./interfaces/ISio2LendingPool.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 1054,
+        "sourceUnit": 8582,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 1018,
+              "name": "ISio2LendingPool",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "src": "392:16:2",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 1053,
+        "nodeType": "ContractDefinition",
+        "src": "453:401:2",
+        "nodes": [
+          {
+            "id": 1025,
+            "nodeType": "UsingForDirective",
+            "src": "519:27:2",
+            "nodes": [],
+            "libraryName": {
+              "id": 1022,
+              "name": "SafeERC20",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 44245,
+              "src": "525:9:2"
+            },
+            "typeName": {
+              "id": 1024,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 1023,
+                "name": "IERC20",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 43859,
+                "src": "539:6:2"
+              },
+              "referencedDeclaration": 43859,
+              "src": "539:6:2",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IERC20_$43859",
+                "typeString": "contract IERC20"
+              }
+            }
+          },
+          {
+            "id": 1029,
+            "nodeType": "VariableDeclaration",
+            "src": "550:78:2",
+            "nodes": [],
+            "baseFunctions": [
+              7491
+            ],
+            "constant": false,
+            "functionSelector": "0542975c",
+            "mutability": "immutable",
+            "name": "ADDRESSES_PROVIDER",
+            "nameLocation": "610:18:2",
+            "overrides": {
+              "id": 1028,
+              "nodeType": "OverrideSpecifier",
+              "overrides": [],
+              "src": "601:8:2"
+            },
+            "scope": 1053,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_ISio2LendingPoolAddressesProvider_$8731",
+              "typeString": "contract ISio2LendingPoolAddressesProvider"
+            },
+            "typeName": {
+              "id": 1027,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 1026,
+                "name": "ISio2LendingPoolAddressesProvider",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 8731,
+                "src": "550:33:2"
+              },
+              "referencedDeclaration": 8731,
+              "src": "550:33:2",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_ISio2LendingPoolAddressesProvider_$8731",
+                "typeString": "contract ISio2LendingPoolAddressesProvider"
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 1033,
+            "nodeType": "VariableDeclaration",
+            "src": "632:55:2",
+            "nodes": [],
+            "baseFunctions": [
+              7497
+            ],
+            "constant": false,
+            "functionSelector": "b4dcfc77",
+            "mutability": "immutable",
+            "name": "LENDING_POOL",
+            "nameLocation": "675:12:2",
+            "overrides": {
+              "id": 1032,
+              "nodeType": "OverrideSpecifier",
+              "overrides": [],
+              "src": "666:8:2"
+            },
+            "scope": 1053,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_ISio2LendingPool_$8581",
+              "typeString": "contract ISio2LendingPool"
+            },
+            "typeName": {
+              "id": 1031,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 1030,
+                "name": "ISio2LendingPool",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 8581,
+                "src": "632:16:2"
+              },
+              "referencedDeclaration": 8581,
+              "src": "632:16:2",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_ISio2LendingPool_$8581",
+                "typeString": "contract ISio2LendingPool"
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 1052,
+            "nodeType": "FunctionDefinition",
+            "src": "692:160:2",
+            "nodes": [],
+            "body": {
+              "id": 1051,
+              "nodeType": "Block",
+              "src": "748:104:2",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "id": 1041,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 1039,
+                      "name": "ADDRESSES_PROVIDER",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1029,
+                      "src": "754:18:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_ISio2LendingPoolAddressesProvider_$8731",
+                        "typeString": "contract ISio2LendingPoolAddressesProvider"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 1040,
+                      "name": "provider",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1036,
+                      "src": "775:8:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_ISio2LendingPoolAddressesProvider_$8731",
+                        "typeString": "contract ISio2LendingPoolAddressesProvider"
+                      }
+                    },
+                    "src": "754:29:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_ISio2LendingPoolAddressesProvider_$8731",
+                      "typeString": "contract ISio2LendingPoolAddressesProvider"
+                    }
+                  },
+                  "id": 1042,
+                  "nodeType": "ExpressionStatement",
+                  "src": "754:29:2"
+                },
+                {
+                  "expression": {
+                    "id": 1049,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 1043,
+                      "name": "LENDING_POOL",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1033,
+                      "src": "789:12:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_ISio2LendingPool_$8581",
+                        "typeString": "contract ISio2LendingPool"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "arguments": [
+                        {
+                          "arguments": [],
+                          "expression": {
+                            "argumentTypes": [],
+                            "expression": {
+                              "id": 1045,
+                              "name": "provider",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 1036,
+                              "src": "821:8:2",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_ISio2LendingPoolAddressesProvider_$8731",
+                                "typeString": "contract ISio2LendingPoolAddressesProvider"
+                              }
+                            },
+                            "id": 1046,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "getLendingPool",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 8665,
+                            "src": "821:23:2",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_external_view$__$returns$_t_address_$",
+                              "typeString": "function () view external returns (address)"
+                            }
+                          },
+                          "id": 1047,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "821:25:2",
+                          "tryCall": false,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        ],
+                        "id": 1044,
+                        "name": "ISio2LendingPool",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 8581,
+                        "src": "804:16:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_contract$_ISio2LendingPool_$8581_$",
+                          "typeString": "type(contract ISio2LendingPool)"
+                        }
+                      },
+                      "id": 1048,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "804:43:2",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_ISio2LendingPool_$8581",
+                        "typeString": "contract ISio2LendingPool"
+                      }
+                    },
+                    "src": "789:58:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_ISio2LendingPool_$8581",
+                      "typeString": "contract ISio2LendingPool"
+                    }
+                  },
+                  "id": 1050,
+                  "nodeType": "ExpressionStatement",
+                  "src": "789:58:2"
+                }
+              ]
+            },
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 1037,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1036,
+                  "mutability": "mutable",
+                  "name": "provider",
+                  "nameLocation": "738:8:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1052,
+                  "src": "704:42:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_ISio2LendingPoolAddressesProvider_$8731",
+                    "typeString": "contract ISio2LendingPoolAddressesProvider"
+                  },
+                  "typeName": {
+                    "id": 1035,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 1034,
+                      "name": "ISio2LendingPoolAddressesProvider",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 8731,
+                      "src": "704:33:2"
+                    },
+                    "referencedDeclaration": 8731,
+                    "src": "704:33:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_ISio2LendingPoolAddressesProvider_$8731",
+                      "typeString": "contract ISio2LendingPoolAddressesProvider"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "703:44:2"
+            },
+            "returnParameters": {
+              "id": 1038,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "748:0:2"
+            },
+            "scope": 1053,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "internal"
+          }
+        ],
+        "abstract": true,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 1020,
+              "name": "IFlashLoanReceiver",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 7498,
+              "src": "496:18:2"
+            },
+            "id": 1021,
+            "nodeType": "InheritanceSpecifier",
+            "src": "496:18:2"
+          }
+        ],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          1053,
+          7498
+        ],
+        "name": "FlashLoanReceiverBase",
+        "nameLocation": "471:21:2",
+        "scope": 1054,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 2
+}
