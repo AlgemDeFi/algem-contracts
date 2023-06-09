@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import "../../contracts/interfaces/ISio2LendingPool.sol";
 import "forge-std/Test.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "./mocs/MockSio2LendingPool.sol";
@@ -121,7 +122,7 @@ contract Sio2AdapterTest is Test {
 
         assetManager.setAdapter(adapter);
         data = new Sio2AdapterData();
-        data.initialize(adapter, assetManager);
+        data.initialize(adapter, assetManager, ISio2LendingPool(address(pool)));
 
         user = vm.addr(1); // convert private key to address
         liquidator = vm.addr(2);

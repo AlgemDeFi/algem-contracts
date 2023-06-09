@@ -2,12 +2,14 @@
 pragma solidity 0.8.4;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "./interfaces/ISio2LendingPool.sol";
 import "./Sio2AdapterAssetManager.sol";
 import "./Sio2Adapter.sol";
 
 contract Sio2AdapterData is Initializable {
     Sio2Adapter private adapter;
     Sio2AdapterAssetManager private assetManager;
+    ISio2LendingPool private lendingPool;
 
     uint256 private constant RISK_PARAMS_PRECISION = 1e4;
 
@@ -16,9 +18,14 @@ contract Sio2AdapterData is Initializable {
 
     address private collateralAddr;
 
-    function initialize(Sio2Adapter _adapter, Sio2AdapterAssetManager _assetManager) external initializer {
+    function initialize(
+        Sio2Adapter _adapter, 
+        Sio2AdapterAssetManager _assetManager,
+        ISio2LendingPool _lendingPool
+    ) external initializer {
         adapter = _adapter;
         assetManager = _assetManager;
+        lendingPool = _lendingPool;
         collateralLT = adapter.collateralLT();
         collateralLTV = adapter.collateralLTV();
         collateralAddr = address(adapter.nastr());
@@ -122,5 +129,19 @@ contract Sio2AdapterData is Initializable {
         }
 
         return (before, later);
+    }
+
+    function getBorrowAssetLiquidity(string memory _assetName) external view returns (uint256) {
+        Sio2AdapterAssetManager.Asset memory asset = assetManager.getAssetInfo(_assetName);
+        address tokenAddr = asset.addr;
+
+        DataTypes.ReserveData memory data = lendingPool.getReserveData(tokenAddr);
+        address sTokenAddr = data.STokenAddress;
+        address vdTokenAddr = data.variableDebtTokenAddress;
+
+        uint256 sTokenSupply = ERC20Upgradeable(sTokenAddr).totalSupply();
+        uint256 vdTokenSupply = ERC20Upgradeable(vdTokenAddr).totalSupply();
+
+        return sTokenSupply - vdTokenSupply;
     }
 }

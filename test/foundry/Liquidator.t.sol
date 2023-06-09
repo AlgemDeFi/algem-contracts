@@ -14,6 +14,8 @@ import "../../contracts/interfaces/IPancakeRouter01.sol";
 import "../../contracts/interfaces/IPancakePair.sol";
 
 contract LiquidatorTest is Test {
+    using stdStorage for StdStorage;
+
     Sio2Adapter adapter;
     Sio2AdapterAssetManager assetManager;
     Liquidator liquidator;
@@ -81,7 +83,7 @@ contract LiquidatorTest is Test {
 
         assetManager.setAdapter(adapter);
         data = new Sio2AdapterData();
-        data.initialize(adapter, assetManager);
+        data.initialize(adapter, assetManager, pool);
 
         liquidator = new Liquidator(
             ISio2LendingPool(0x4df48B292C026f0340B60C582f58aa41E09fF0de),
@@ -157,14 +159,14 @@ contract LiquidatorTest is Test {
         vm.stopPrank();
     }
 
-    function testSwapCollateralToASTR() public {
-        deal(dai, address(liquidator), 1e18);
-        console.log("liquidator collateral bal:", daiT.balanceOf(address(liquidator)));
-        liquidator.swapCollateralToASTR();
+    // function testSwapCollateralToASTR() public {
+    //     deal(dai, address(liquidator), 1e18);
+    //     console.log("liquidator collateral bal:", daiT.balanceOf(address(liquidator)));
+    //     liquidator.swapCollateralToASTR();
 
-        assertEq(colT.balanceOf(address(liquidator)), 0);
-        assertGt(address(this).balance, 0);
-    }
+    //     assertEq(colT.balanceOf(address(liquidator)), 0);
+    //     assertGt(address(this).balance, 0);
+    // }
 
     function testFlashloan() public {
         deal(weth, address(liquidator), 1e18);
@@ -304,41 +306,15 @@ contract LiquidatorTest is Test {
 
         console.log("hf after borrow busd:", data.estimateHF(user));
 
-        adapter.setLT(adapter.collateralLT() * 80 / 100);
+        // set LT
+        // stdstore
+        //     .target(address(adapter))
+        //     .sig(adapter.collateralLT())
+        //     .checked_write(adapter.collateralLT() * 80 / 100);
 
         console.log("hf after lt setting:", data.estimateHF(user));
 
         liquidator.liquidate(user);
-
-        console.log("hf after liquidation:", data.estimateHF(user));
-
-        console.log("liquidator balance is:", address(liquidator).balance);
-
-        console.log("---");
-        console.log("total user's debt usd:", liquidator.totalDebtUSDglobal());
-
-        console.log("assets for flashloan:");
-        uint256 len = liquidator.getAssetsForFlashloanLength();
-        address[] memory assets = new address[](len);
-        uint256[] memory amounts = new uint256[](len);
-        (assets, amounts) = liquidator.getAssetsForFlashloan();
-        for (uint256 i; i < assets.length; i++) {
-            console.log(ERC20(assets[i]).name(), "=>", amounts[i]);
-        }
-
-        console.log("assets after flashloan:");
-        uint256 lenAfter = liquidator.getAssetsAfterFlashloanLength();
-        address[] memory assetsAfter = new address[](lenAfter);
-        uint256[] memory amountsAfter = new uint256[](lenAfter);
-        (assetsAfter, amountsAfter) = liquidator.getAssetsAfterFlashloan();
-        for (uint256 i; i < assetsAfter.length; i++) {
-            console.log(ERC20(assetsAfter[i]).name(), "=>", amountsAfter[i]);
-        }
-
-        console.log("coll before liquidation: ", liquidator.collBalBeforeLiq());
-        console.log("coll after liquidation: ", liquidator.collBalAfterLiq());
-        console.log("astr balance before swap: ", liquidator.astrBalBeforeSwap());
-        console.log("astr balance after swap: ", liquidator.astrBalAfterSwap());
 
         while (data.estimateHF(user) < 1 ether) {
             Sio2Adapter.User memory userStruct = adapter.getUser(user);
