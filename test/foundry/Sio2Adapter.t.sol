@@ -2,9 +2,7 @@
 pragma solidity ^0.8.4;
 
 import "forge-std/Test.sol";
-import "../../contracts/Sio2Adapter.sol";
-import "../../contracts/Sio2AdapterAssetManager.sol";
-import "../../contracts/Liquidator.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "./mocs/MockSio2LendingPool.sol";
 import "./mocs/MockERC20.sol";
 import "./mocs/MockSCollateralToken.sol";
@@ -12,13 +10,16 @@ import "./mocs/MockPriceOracle.sol";
 import "./mocs/MockVDToken.sol";
 import "./mocs/MockProvider.sol";
 import "./mocs/MockIncentivesController.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "../../contracts/Sio2Adapter.sol";
+import "../../contracts/Sio2AdapterAssetManager.sol";
+import "../../contracts/Liquidator.sol";
 import "../../contracts/interfaces/ISio2LendingPoolAddressesProvider.sol";
 import "../../contracts/interfaces/ISio2LendingPool.sol";
 
 contract Sio2AdapterTest is Test {
     Sio2Adapter adapter;
     Sio2AdapterAssetManager assetManager;
+    Sio2AdapterData data;
 
     MockSio2LendingPool pool;
     MockERC20 nastr;
@@ -119,6 +120,8 @@ contract Sio2AdapterTest is Test {
         );
 
         assetManager.setAdapter(adapter);
+        data = new Sio2AdapterData();
+        data.initialize(adapter, assetManager);
 
         user = vm.addr(1); // convert private key to address
         liquidator = vm.addr(2);
@@ -128,6 +131,7 @@ contract Sio2AdapterTest is Test {
             adapter,
             assetManager,
             ISio2LendingPoolAddressesProvider(provider),
+            data,
             address(nastr)
         );
         liquidatorContract.grantRole(liquidatorContract.LIQUIDATOR(), user);
@@ -234,7 +238,7 @@ contract Sio2AdapterTest is Test {
         adapter.supply(1000 ether);
         adapter.borrow("BUSD", 10 ether);
         (uint256 hf, uint256 debtUSD) = adapter.getLiquidationParameters(user);
-        uint256 estimateHF = adapter.estimateHF(user);
+        uint256 estimateHF = data.estimateHF(user);
         assertEq(hf, estimateHF);
         assertGt(hf, 0);
         vm.stopPrank();
@@ -318,7 +322,7 @@ contract Sio2AdapterTest is Test {
         adapter.getLiquidationParameters(user);
 
         vm.expectRevert("User has no debts");
-        adapter.estimateHF(user);
+        data.estimateHF(user);
 
         (uint256 availableToBorrow, ) = adapter.availableCollateralUSD(user);
 

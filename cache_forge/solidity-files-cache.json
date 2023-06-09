@@ -980,8 +980,8 @@
       }
     },
     "contracts/Liquidator.sol": {
-      "lastModificationDate": 1686015742825,
-      "contentHash": "38a4a5fca2d5c409cf3dfe47edc7b32a",
+      "lastModificationDate": 1686277685527,
+      "contentHash": "0c02f0f3c6f243c21d4da8b39a3a25a7",
       "sourceName": "contracts/Liquidator.sol",
       "solcConfig": {
         "settings": {
@@ -1015,6 +1015,8 @@
         "contracts/FlashLoanReceiverBase.sol",
         "contracts/Sio2Adapter.sol",
         "contracts/Sio2AdapterAssetManager.sol",
+        "contracts/Sio2AdapterData.sol",
+        "contracts/interfaces/IAdaptersDistributor.sol",
         "contracts/interfaces/IArthswapFactory.sol",
         "contracts/interfaces/IFlashLoanReceiver.sol",
         "contracts/interfaces/IPancakePair.sol",
@@ -1284,8 +1286,8 @@
       }
     },
     "contracts/Sio2Adapter.sol": {
-      "lastModificationDate": 1686015742827,
-      "contentHash": "9f643f746cf38efc643f82f08f32b38b",
+      "lastModificationDate": 1686277557517,
+      "contentHash": "66076bb4f0719596b9ee6d954ecd5553",
       "sourceName": "contracts/Sio2Adapter.sol",
       "solcConfig": {
         "settings": {
@@ -1318,6 +1320,7 @@
       "imports": [
         "contracts/Sio2Adapter.sol",
         "contracts/Sio2AdapterAssetManager.sol",
+        "contracts/interfaces/IAdaptersDistributor.sol",
         "contracts/interfaces/ISio2IncentivesController.sol",
         "contracts/interfaces/ISio2LendingPool.sol",
         "contracts/interfaces/ISio2PriceOracle.sol",
@@ -1341,8 +1344,8 @@
       }
     },
     "contracts/Sio2AdapterAssetManager.sol": {
-      "lastModificationDate": 1686015742827,
-      "contentHash": "f3002cdcf28ba6efcc33ddce383f1653",
+      "lastModificationDate": 1686277570374,
+      "contentHash": "4b7f66d6d50f361db259a319ca3a0c75",
       "sourceName": "contracts/Sio2AdapterAssetManager.sol",
       "solcConfig": {
         "settings": {
@@ -1375,6 +1378,7 @@
       "imports": [
         "contracts/Sio2Adapter.sol",
         "contracts/Sio2AdapterAssetManager.sol",
+        "contracts/interfaces/IAdaptersDistributor.sol",
         "contracts/interfaces/ISio2IncentivesController.sol",
         "contracts/interfaces/ISio2LendingPool.sol",
         "contracts/interfaces/ISio2PriceOracle.sol",
@@ -1394,6 +1398,64 @@
       "artifacts": {
         "Sio2AdapterAssetManager": {
           "0.8.4+commit.c7e474f2.Darwin.appleclang": "Sio2AdapterAssetManager.sol/Sio2AdapterAssetManager.json"
+        }
+      }
+    },
+    "contracts/Sio2AdapterData.sol": {
+      "lastModificationDate": 1686277577965,
+      "contentHash": "7a9dcf40b60049668970b5784d19299c",
+      "sourceName": "contracts/Sio2AdapterData.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "contracts/Sio2Adapter.sol",
+        "contracts/Sio2AdapterAssetManager.sol",
+        "contracts/interfaces/IAdaptersDistributor.sol",
+        "contracts/interfaces/ISio2IncentivesController.sol",
+        "contracts/interfaces/ISio2LendingPool.sol",
+        "contracts/interfaces/ISio2PriceOracle.sol",
+        "contracts/libraries/DataTypes.sol",
+        "node_modules/@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+        "node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+        "node_modules/@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol",
+        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
+        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol",
+        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol",
+        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-IERC20PermitUpgradeable.sol",
+        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol",
+        "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
+        "node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol"
+      ],
+      "versionRequirement": "=0.8.4",
+      "artifacts": {
+        "Sio2AdapterData": {
+          "0.8.4+commit.c7e474f2.Darwin.appleclang": "Sio2AdapterData.sol/Sio2AdapterData.json"
         }
       }
     },
@@ -5989,8 +6051,8 @@
       }
     },
     "test/foundry/Liquidator.t.sol": {
-      "lastModificationDate": 1686016980697,
-      "contentHash": "53cc999eea486f6ed65a100ed4918c49",
+      "lastModificationDate": 1686277888957,
+      "contentHash": "4ac7a9e10df841bc2b771d12476b6954",
       "sourceName": "test/foundry/Liquidator.t.sol",
       "solcConfig": {
         "settings": {
@@ -6025,6 +6087,8 @@
         "contracts/Liquidator.sol",
         "contracts/Sio2Adapter.sol",
         "contracts/Sio2AdapterAssetManager.sol",
+        "contracts/Sio2AdapterData.sol",
+        "contracts/interfaces/IAdaptersDistributor.sol",
         "contracts/interfaces/IArthswapFactory.sol",
         "contracts/interfaces/IFlashLoanReceiver.sol",
         "contracts/interfaces/IPancakePair.sol",
@@ -6083,8 +6147,8 @@
       }
     },
     "test/foundry/Sio2Adapter.t.sol": {
-      "lastModificationDate": 1686016708757,
-      "contentHash": "cb45ea092a8163537defce2ac36d12ae",
+      "lastModificationDate": 1686277983446,
+      "contentHash": "af2180a9411a11be3fa81fd6618efe9d",
       "sourceName": "test/foundry/Sio2Adapter.t.sol",
       "solcConfig": {
         "settings": {
@@ -6119,6 +6183,8 @@
         "contracts/Liquidator.sol",
         "contracts/Sio2Adapter.sol",
         "contracts/Sio2AdapterAssetManager.sol",
+        "contracts/Sio2AdapterData.sol",
+        "contracts/interfaces/IAdaptersDistributor.sol",
         "contracts/interfaces/IArthswapFactory.sol",
         "contracts/interfaces/IFlashLoanReceiver.sol",
         "contracts/interfaces/IPancakePair.sol",

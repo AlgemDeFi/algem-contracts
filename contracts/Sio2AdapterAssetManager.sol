@@ -8,6 +8,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "./interfaces/ISio2LendingPool.sol";
 import "./Sio2Adapter.sol";
+import "./interfaces/IAdaptersDistributor.sol";
 
 contract Sio2AdapterAssetManager is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
     using ReserveConfiguration for DataTypes.ReserveConfigurationMap; // used to extract risk parameters of an asset
@@ -38,9 +39,13 @@ contract Sio2AdapterAssetManager is Initializable, OwnableUpgradeable, Reentranc
         uint256 accBorrowedRewardsPerShare;
     }
 
+    IAdaptersDistributor public adaptersDistributor;
+
     event AddAsset(address owner, string indexed assetName, address indexed assetAddress);
     event RemoveAsset(address owner, string indexed assetName);
     event SetAdapter(address who, address adapterAddress);
+    event UpdateBalSuccess(address user, string utilityName, uint256 amount);
+    event UpdateBalError(address user, string utilityName, uint256 amount, string reason);
 
     // /// @custom:oz-upgrades-unsafe-allow constructor
     // constructor() {
@@ -58,6 +63,7 @@ contract Sio2AdapterAssetManager is Initializable, OwnableUpgradeable, Reentranc
         require(_snastr != address(0), "snASTR address cannot be zero");
 
         bTokens.push(_snastr);
+        adaptersDistributor = IAdaptersDistributor(0x294Bb6b8e692543f373383A84A1f296D3C297aEf);
 
         pool = _pool;
     }
@@ -92,7 +98,7 @@ contract Sio2AdapterAssetManager is Initializable, OwnableUpgradeable, Reentranc
             addr: _assetAddress,
             bTokenAddress: _bToken,
             liquidationThreshold: lt,
-            lastBTokenBalance: _to18DecFormat(_assetAddress, nativeBTokenBal),
+            lastBTokenBalance: to18DecFormat(_assetAddress, nativeBTokenBal),
             accBTokensPerShare: 0,
             totalBorrowed: 0,
             rewardsWeight: _rewardsWeight,
@@ -159,13 +165,29 @@ contract Sio2AdapterAssetManager is Initializable, OwnableUpgradeable, Reentranc
     function updateLastBTokenBalance(string memory _assetName) external onlyAdapter {
         Asset storage asset = assetInfo[_assetName];
         uint256 nativeBal = IERC20Upgradeable(asset.bTokenAddress).balanceOf(address(adapter));
-        asset.lastBTokenBalance = _to18DecFormat(asset.addr, nativeBal);
+        asset.lastBTokenBalance = to18DecFormat(asset.addr, nativeBal);
     }
 
     function setAdapter(Sio2Adapter _adapter) external onlyOwner {
         adapter = _adapter;
 
         emit SetAdapter(msg.sender, address(_adapter));
+    }
+
+    function updateBalanceInAdaptersDistributor(address _user) external onlyAdapter {
+        Sio2Adapter.User memory user = adapter.getUser(_user);
+        uint256 nastrBalAfter = user.collateralAmount;
+        try
+            adaptersDistributor.updateBalanceInAdapter(
+                "Sio2_Adapter",
+                _user,
+                nastrBalAfter
+            )
+        {
+            emit UpdateBalSuccess(_user, "Sio2_Adapter", nastrBalAfter);
+        } catch Error(string memory reason) {
+            emit UpdateBalError(_user, "Sio2_Adapter", nastrBalAfter, reason);
+        }
     }
 
     function getBTokens() external view returns (address[] memory) {
@@ -224,13 +246,52 @@ contract Sio2AdapterAssetManager is Initializable, OwnableUpgradeable, Reentranc
         return (assetsNames, debtAmounts);
     }
 
+    // @notice Used to get assets params
+    function getAssetParameters(
+        address _assetAddr
+    )
+        external
+        view
+        returns (
+            uint256 liquidationThreshold,
+            uint256 liquidationPenalty,
+            uint256 loanToValue
+        )
+    {
+        DataTypes.ReserveConfigurationMap memory data = pool.getConfiguration(
+            _assetAddr
+        );
+        liquidationThreshold = data.getLiquidationThreshold();
+        liquidationPenalty = data.getLiquidationBonus();
+        loanToValue = data.getLtv();
+    }
+
     // @notice If token decimals is different from 18, 
     //         add the missing number of zeros for correct calculations
-    function _to18DecFormat(address _tokenAddress, uint256 _amount) private view returns (uint256) {
+    function to18DecFormat(address _tokenAddress, uint256 _amount) public view returns (uint256) {
         if (ERC20Upgradeable(_tokenAddress).decimals() < 18) {
             return _amount * 10 ** (18 - ERC20Upgradeable(_tokenAddress).decimals());
         }
         return _amount;
     }
 
+    function toNativeDecFormat(
+        address _tokenAddress,
+        uint256 _amount
+    ) external view returns (uint256) {
+        if (ERC20Upgradeable(_tokenAddress).decimals() < 18) {
+            return
+                _amount /
+                10 ** (18 - ERC20Upgradeable(_tokenAddress).decimals());
+        }
+        return _amount;
+    }
+
+    function getAssetInfo(string memory _assetName) external view returns (Asset memory) {
+        return assetInfo[_assetName];
+    }
+
+    /* to remove ❗️ */function set() public {
+        adaptersDistributor = IAdaptersDistributor(0x294Bb6b8e692543f373383A84A1f296D3C297aEf);
+    }
 }

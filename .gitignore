@@ -22,6 +22,10 @@ astar-collator
 cache
 artifacts
 
+#Foundry files
+out
+cache_forge
+
 #Sensetive stuff
 mnemonic.txt
 

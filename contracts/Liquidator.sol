@@ -7,6 +7,7 @@ import "./FlashLoanReceiverBase.sol";
 import "./interfaces/ISio2LendingPool.sol";
 import "./Sio2Adapter.sol";
 import "./Sio2AdapterAssetManager.sol";
+import "./Sio2AdapterData.sol";
 import "./interfaces/IPancakeRouter01.sol";
 import "./interfaces/IArthswapFactory.sol";
 import "./libraries/ArthswapLibrary.sol";
@@ -15,6 +16,7 @@ contract Liquidator is FlashLoanReceiverBase, AccessControl {
     ISio2LendingPool public pool;
     Sio2Adapter public adapter;
     Sio2AdapterAssetManager public assetManager;
+    Sio2AdapterData public data;
 
     IPancakeRouter01 public constant ROUTER =
         IPancakeRouter01(0xE915D2393a08a00c5A463053edD31bAe2199b9e7);
@@ -58,6 +60,7 @@ contract Liquidator is FlashLoanReceiverBase, AccessControl {
         Sio2Adapter _adapter,
         Sio2AdapterAssetManager _assetManager,
         ISio2LendingPoolAddressesProvider _provider,
+        Sio2AdapterData _data,
         address _nastrAddr
     ) FlashLoanReceiverBase(_provider) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -66,8 +69,10 @@ contract Liquidator is FlashLoanReceiverBase, AccessControl {
         adapter = _adapter;
         assetManager = _assetManager;
         nastrAddr = _nastrAddr;
-        pairToPath[nastrAddr][wastrAddr] = [
-            0xE511ED88575C57767BAfb72BfD10775413E3F2b0,
+        data = _data;
+        /* set path for nastr => astr 👉 */ pairToPath[nastrAddr][wastrAddr] = [
+            /* path for DAI => ASTR */ 0x6De33698e9e9b787e09d3Bd7771ef63557E148bb,
+            0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98,
             0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720
         ];
 
@@ -84,8 +89,35 @@ contract Liquidator is FlashLoanReceiverBase, AccessControl {
 
     receive() external payable {}
 
+    /* to remove ❗️ */ uint256 public totalDebtUSDglobal;
+    /* to remove ❗️ */ uint256 public collBalBeforeLiq;
+    /* to remove ❗️ */ uint256 public collBalAfterLiq;
+    /* to remove ❗️ */ uint256 public astrBalBeforeSwap;
+    /* to remove ❗️ */ uint256 public astrBalAfterSwap;
+    /* to remove ❗️ */ address[] public assetsForFlashloan;
+    /* to remove ❗️ */ uint256[] public amountsForFlashloan;
+
+    /* to remove ❗️ */ address[] public assetsAfterFlashloan;
+    /* to remove ❗️ */ uint256[] public amountsAfterFlashloan;
+
+    /* to remove ❗️ */ function getAssetsForFlashloan() public view returns (address[] memory, uint256[] memory) {
+        return (assetsForFlashloan, amountsForFlashloan);
+    }
+
+    /* to remove ❗️ */ function getAssetsForFlashloanLength() public view returns (uint256) {
+        return assetsForFlashloan.length;
+    }
+
+    /* to remove ❗️ */ function getAssetsAfterFlashloan() public view returns (address[] memory, uint256[] memory) {
+        return (assetsAfterFlashloan, amountsAfterFlashloan);
+    }
+
+    /* to remove ❗️ */ function getAssetsAfterFlashloanLength() public view returns (uint256) {
+        return assetsAfterFlashloan.length;
+    }
+
     function liquidate(address _user) public onlyRole(LIQUIDATOR) {
-        require(adapter.estimateHF(_user) < 1e18, "Pos is healthy enough");
+        require(data.estimateHF(_user) < 1e18, "Pos is healthy enough");
         currentUser = _user;
 
         // get user's debt tokens names and debt amounts
@@ -99,6 +131,8 @@ contract Liquidator is FlashLoanReceiverBase, AccessControl {
         // perhaps merging is not needed
         (debtAssets, totalDebtUSD) = mergeArraysAndCalcSumUSD(names, debts);
 
+        /* to remove ❗️ */ totalDebtUSDglobal = totalDebtUSD;
+
         // to descending order
         DebtAsset[] memory sortedDebtAssets = toDescendingOrder(debtAssets);
 
@@ -107,6 +141,11 @@ contract Liquidator is FlashLoanReceiverBase, AccessControl {
             address[] memory assets,
             uint256[] memory amounts
         ) = fillAssetsToLiquidate(sortedDebtAssets, totalDebtUSD);
+
+        /* to remove ❗️ */ for (uint256 i; i < assets.length; i++) {
+            assetsForFlashloan.push(assets[i]);
+            amountsForFlashloan.push(amounts[i]);
+        }
 
         flashloan(assets, amounts);
     }
@@ -118,6 +157,13 @@ contract Liquidator is FlashLoanReceiverBase, AccessControl {
         address,
         bytes calldata
     ) external override returns (bool) {
+
+        /* to remove ❗️ */ for (uint256 i; i < assets.length; i++) {
+            assetsAfterFlashloan.push(assets[i]);
+            amountsAfterFlashloan.push(amounts[i]);
+        }
+
+        collBalBeforeLiq = ERC20(nastrAddr).balanceOf(address(this));
 
         // do liquidations and collect collateral
         for (uint256 idx; idx < assets.length;) {
@@ -131,8 +177,13 @@ contract Liquidator is FlashLoanReceiverBase, AccessControl {
             unchecked { ++idx; }
         }
 
+        collBalAfterLiq = ERC20(nastrAddr).balanceOf(address(this));
+        astrBalBeforeSwap = address(this).balance;
+
         // swap all collateral to native astr
-        _swapCollateralToASTR();
+        swapCollateralToASTR();
+
+        astrBalAfterSwap = address(this).balance;
 
         // swap astr to tokens to repay flashloan
         for (uint256 idx; idx < assets.length;) {
@@ -155,7 +206,9 @@ contract Liquidator is FlashLoanReceiverBase, AccessControl {
         return true;
     }
 
-    function _swapCollateralToASTR() private { 
+    // function swapASTRtoTokens(address[] calldata assets, uint256[] calldata amounts, uint256[] calldata premiums)
+
+    /* change visibility or access ❗️ */ function swapCollateralToASTR() public { 
         uint256 nastrBalance = ERC20(nastrAddr).balanceOf(address(this));
         uint256[] memory amounts = ArthswapLibrary.getAmountsOut(
             ROUTER.factory(),

@@ -4,6 +4,7 @@ pragma solidity ^0.8.4;
 import "forge-std/Test.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "../../contracts/Sio2Adapter.sol";
+import "../../contracts/Sio2AdapterData.sol";
 import "../../contracts/Sio2AdapterAssetManager.sol";
 import "../../contracts/Liquidator.sol";
 import "../../contracts/interfaces/ISio2LendingPoolAddressesProvider.sol";
@@ -17,6 +18,7 @@ contract LiquidatorTest is Test {
     Sio2AdapterAssetManager assetManager;
     Liquidator liquidator;
     ISio2LendingPool pool = ISio2LendingPool(0x4df48B292C026f0340B60C582f58aa41E09fF0de);
+    Sio2AdapterData data;
 
     address provider;
     address user;
@@ -78,12 +80,15 @@ contract LiquidatorTest is Test {
         );
 
         assetManager.setAdapter(adapter);
+        data = new Sio2AdapterData();
+        data.initialize(adapter, assetManager);
 
         liquidator = new Liquidator(
             ISio2LendingPool(0x4df48B292C026f0340B60C582f58aa41E09fF0de),
             Sio2Adapter(address(adapter)),
             Sio2AdapterAssetManager(address(assetManager)),
             ISio2LendingPoolAddressesProvider(0x2660e0668dd5A18Ed092D5351FfF7B0A403f9721),
+            data,
             col
         );
 
@@ -152,14 +157,14 @@ contract LiquidatorTest is Test {
         vm.stopPrank();
     }
 
-    // function testSwapCollateralToASTR() public {
-    //     deal(dai, address(liquidator), 1e18);
-    //     console.log("liquidator collateral bal:", daiT.balanceOf(address(liquidator)));
-    //     liquidator.swapCollateralToASTR();
+    function testSwapCollateralToASTR() public {
+        deal(dai, address(liquidator), 1e18);
+        console.log("liquidator collateral bal:", daiT.balanceOf(address(liquidator)));
+        liquidator.swapCollateralToASTR();
 
-    //     assertEq(colT.balanceOf(address(liquidator)), 0);
-    //     assertGt(address(this).balance, 0);
-    // }
+        assertEq(colT.balanceOf(address(liquidator)), 0);
+        assertGt(address(this).balance, 0);
+    }
 
     function testFlashloan() public {
         deal(weth, address(liquidator), 1e18);
@@ -285,7 +290,7 @@ contract LiquidatorTest is Test {
         
         // vm.deal(address(liquidator), 500_000 ether);
 
-        uint256 hf = adapter.estimateHF(user);
+        uint256 hf = data.estimateHF(user);
         console.log("initial hf is:", hf);
 
         (uint256 availableToBorrowUSD, ) = adapter.availableCollateralUSD(user);
@@ -297,31 +302,55 @@ contract LiquidatorTest is Test {
         vm.prank(user);
         adapter.borrow("WETH", wethAmountToBorrow);
 
-        console.log("hf after borrow busd:", adapter.estimateHF(user));
+        console.log("hf after borrow busd:", data.estimateHF(user));
 
         adapter.setLT(adapter.collateralLT() * 80 / 100);
 
-        console.log("hf after lt setting:", adapter.estimateHF(user));
+        console.log("hf after lt setting:", data.estimateHF(user));
 
         liquidator.liquidate(user);
 
-        console.log("hf after liquidation:", adapter.estimateHF(user));
+        console.log("hf after liquidation:", data.estimateHF(user));
 
         console.log("liquidator balance is:", address(liquidator).balance);
 
         console.log("---");
+        console.log("total user's debt usd:", liquidator.totalDebtUSDglobal());
 
-        while (adapter.estimateHF(user) < 1 ether) {
+        console.log("assets for flashloan:");
+        uint256 len = liquidator.getAssetsForFlashloanLength();
+        address[] memory assets = new address[](len);
+        uint256[] memory amounts = new uint256[](len);
+        (assets, amounts) = liquidator.getAssetsForFlashloan();
+        for (uint256 i; i < assets.length; i++) {
+            console.log(ERC20(assets[i]).name(), "=>", amounts[i]);
+        }
+
+        console.log("assets after flashloan:");
+        uint256 lenAfter = liquidator.getAssetsAfterFlashloanLength();
+        address[] memory assetsAfter = new address[](lenAfter);
+        uint256[] memory amountsAfter = new uint256[](lenAfter);
+        (assetsAfter, amountsAfter) = liquidator.getAssetsAfterFlashloan();
+        for (uint256 i; i < assetsAfter.length; i++) {
+            console.log(ERC20(assetsAfter[i]).name(), "=>", amountsAfter[i]);
+        }
+
+        console.log("coll before liquidation: ", liquidator.collBalBeforeLiq());
+        console.log("coll after liquidation: ", liquidator.collBalAfterLiq());
+        console.log("astr balance before swap: ", liquidator.astrBalBeforeSwap());
+        console.log("astr balance after swap: ", liquidator.astrBalAfterSwap());
+
+        while (data.estimateHF(user) < 1 ether) {
             Sio2Adapter.User memory userStruct = adapter.getUser(user);
             if (userStruct.collateralAmount > 1 ether) {
                 liquidator.liquidate(user);
             }
-            console.log("hf after liquidation ===>", adapter.estimateHF(user));
+            console.log("hf after liquidation ===>", data.estimateHF(user));
         }
     }
 
     function testAssetParameters() public {
-        (, uint256 liquidationPenalty, ) = adapter.getAssetParameters(busd);
+        (, uint256 liquidationPenalty, ) = assetManager.getAssetParameters(busd);
         console.log("=>", liquidationPenalty);
     }
 }
