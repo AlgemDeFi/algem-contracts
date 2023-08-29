@@ -4,7 +4,7 @@ import "@nomiclabs/hardhat-ethers";
 import "hardhat-deploy";
 import '@typechain/hardhat'
 import "@nomicfoundation/hardhat-toolbox";
-import "./tasks/index";
+// import "./tasks/index";
 import "@nomicfoundation/hardhat-foundry";
 import "hardhat-contract-sizer";
 
