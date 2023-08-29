@@ -1,0 +1,1201 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "contract MockZenlinkRouter",
+          "name": "_pool",
+          "type": "address"
+        },
+        {
+          "internalType": "contract MockERC20",
+          "name": "_lp",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "getReserves",
+      "outputs": [
+        {
+          "internalType": "uint112",
+          "name": "reserve0",
+          "type": "uint112"
+        },
+        {
+          "internalType": "uint112",
+          "name": "reserve1",
+          "type": "uint112"
+        },
+        {
+          "internalType": "uint32",
+          "name": "blockTimestampLast",
+          "type": "uint32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "lp",
+      "outputs": [
+        {
+          "internalType": "contract MockERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pool",
+      "outputs": [
+        {
+          "internalType": "contract MockZenlinkRouter",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b5060405161038e38038061038e83398101604081905261002f91610060565b600080546001600160a01b039384166001600160a01b031991821617909155600180549290931691161790556100b1565b60008060408385031215610072578182fd5b825161007d81610099565b602084015190925061008e81610099565b809150509250929050565b6001600160a01b03811681146100ae57600080fd5b50565b6102ce806100c06000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c80630902f1ac1461005157806316f0115b1461009157806318160ddd146100bc578063313c06a0146100d2575b600080fd5b6100596100e5565b604080516dffffffffffffffffffffffffffff948516815293909216602084015263ffffffff16908201526060015b60405180910390f35b6000546100a4906001600160a01b031681565b6040516001600160a01b039091168152602001610088565b6100c46101fe565b604051908152602001610088565b6001546100a4906001600160a01b031681565b60008060008060009054906101000a90046001600160a01b03166001600160a01b0316635d8de3166040518163ffffffff1660e01b815260040160206040518083038186803b15801561013757600080fd5b505afa15801561014b573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061016f9190610280565b925060008054906101000a90046001600160a01b03166001600160a01b0316634a6846ec6040518163ffffffff1660e01b815260040160206040518083038186803b1580156101bd57600080fd5b505afa1580156101d1573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906101f59190610280565b92934292509050565b600154604080516318160ddd60e01b815290516000926001600160a01b0316916318160ddd916004808301926020929190829003018186803b15801561024357600080fd5b505afa158015610257573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061027b9190610280565b905090565b600060208284031215610291578081fd5b505191905056fea264697066735822122072af6c131decd83302b77fd8aa369bddb14b4b569e923be0a1880f258552922864736f6c63430008040033",
+    "sourceMap": "90:564:57:-:0;;;182:99;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;244:4;:12;;-1:-1:-1;;;;;244:12:57;;;-1:-1:-1;;;;;;244:12:57;;;;;;;;266:8;;;;;;;;;;;90:564;;14:463:140;139:6;147;200:2;188:9;179:7;175:23;171:32;168:2;;;221:6;213;206:22;168:2;258:9;252:16;277:42;313:5;277:42;:::i;:::-;388:2;373:18;;367:25;338:5;;-1:-1:-1;401:44:140;367:25;401:44;:::i;:::-;464:7;454:17;;;158:319;;;;;:::o;482:142::-;-1:-1:-1;;;;;568:31:140;;558:42;;548:2;;614:1;611;604:12;548:2;538:86;:::o;:::-;90:564:57;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c80630902f1ac1461005157806316f0115b1461009157806318160ddd146100bc578063313c06a0146100d2575b600080fd5b6100596100e5565b604080516dffffffffffffffffffffffffffff948516815293909216602084015263ffffffff16908201526060015b60405180910390f35b6000546100a4906001600160a01b031681565b6040516001600160a01b039091168152602001610088565b6100c46101fe565b604051908152602001610088565b6001546100a4906001600160a01b031681565b60008060008060009054906101000a90046001600160a01b03166001600160a01b0316635d8de3166040518163ffffffff1660e01b815260040160206040518083038186803b15801561013757600080fd5b505afa15801561014b573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061016f9190610280565b925060008054906101000a90046001600160a01b03166001600160a01b0316634a6846ec6040518163ffffffff1660e01b815260040160206040518083038186803b1580156101bd57600080fd5b505afa1580156101d1573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906101f59190610280565b92934292509050565b600154604080516318160ddd60e01b815290516000926001600160a01b0316916318160ddd916004808301926020929190829003018186803b15801561024357600080fd5b505afa158015610257573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061027b9190610280565b905090565b600060208284031215610291578081fd5b505191905056fea264697066735822122072af6c131decd83302b77fd8aa369bddb14b4b569e923be0a1880f258552922864736f6c63430008040033",
+    "sourceMap": "90:564:57:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;291:262;;;:::i;:::-;;;;885:30:140;942:15;;;924:34;;994:15;;;;989:2;974:18;;967:43;1058:10;1046:23;1026:18;;;1019:51;863:2;848:18;291:262:57;;;;;;;;121:29;;;;;-1:-1:-1;;;;;121:29:57;;;;;;-1:-1:-1;;;;;396:32:140;;;378:51;;366:2;351:18;121:29:57;333:102:140;559:93:57;;;:::i;:::-;;;1227:25:140;;;1215:2;1200:18;559:93:57;1182:76:140;156:19:57;;;;;-1:-1:-1;;;;;156:19:57;;;291:262;337:16;355;373:25;429:4;;;;;;;;;-1:-1:-1;;;;;429:4:57;-1:-1:-1;;;;;429:14:57;;:16;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;410:36;;475:4;;;;;;;;-1:-1:-1;;;;;475:4:57;-1:-1:-1;;;;;475:14:57;;:16;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;291:262;;530:15;;-1:-1:-1;291:262:57;-1:-1:-1;291:262:57:o;559:93::-;629:2;;:16;;;-1:-1:-1;;;629:16:57;;;;603:7;;-1:-1:-1;;;;;629:2:57;;:14;;:16;;;;;;;;;;;;;;:2;:16;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;622:23;;559:93;:::o;14:194:140:-;84:6;137:2;125:9;116:7;112:23;108:32;105:2;;;158:6;150;143:22;105:2;-1:-1:-1;186:16:140;;95:113;-1:-1:-1;95:113:140:o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "getReserves()": "0902f1ac",
+    "lp()": "313c06a0",
+    "pool()": "16f0115b",
+    "totalSupply()": "18160ddd"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.4+commit.c7e474f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract MockZenlinkRouter\",\"name\":\"_pool\",\"type\":\"address\"},{\"internalType\":\"contract MockERC20\",\"name\":\"_lp\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"getReserves\",\"outputs\":[{\"internalType\":\"uint112\",\"name\":\"reserve0\",\"type\":\"uint112\"},{\"internalType\":\"uint112\",\"name\":\"reserve1\",\"type\":\"uint112\"},{\"internalType\":\"uint32\",\"name\":\"blockTimestampLast\",\"type\":\"uint32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"lp\",\"outputs\":[{\"internalType\":\"contract MockERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pool\",\"outputs\":[{\"internalType\":\"contract MockZenlinkRouter\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/mock/MockZenlinkPair.sol\":\"MockZenlinkPair\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@ensdomains/=node_modules/@ensdomains/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/mock/MockERC20.sol\":{\"keccak256\":\"0x51952f93f3a91e04f59ea08ebda5b353de7443f16ca4cbd5ad579079754090f2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b6ce529cf0cb97a2bfe4deff3f1172b6c7c07f86ab114338d4cfaa05c4cde5db\",\"dweb:/ipfs/QmQc9x9SWifgxMEDB8b1BLsWxf2ghAJpHq8KgnLvGpUjCf\"]},\"contracts/mock/MockZenlinkPair.sol\":{\"keccak256\":\"0x8bccc4edae2ea82e8d871ce7d850b9361cd54396d40ef7b327fb979cf8816cbb\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c2643b0dde73a53af0433ef9ba0c6c624f18854123e2ad0b2358205001c557a1\",\"dweb:/ipfs/QmdJ3Gvk27SUFTZDbkCBMC7yyqqZFxTwTHiUaTjWNNMKD8\"]},\"contracts/mock/MockZenlinkRouter.sol\":{\"keccak256\":\"0x9267b0bf8323403c34717661695c94aad1e126f8e6d069193b507284bbef532c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3cc52cae5f1809dc5d6e7c50e904464486db1fe199aa7a71314156074ef15a58\",\"dweb:/ipfs/QmeK2yyNNfkXHinQhqNeqcRptSncAV8J7tuCZHzgEwcwF6\"]},\"contracts/mock/libraries/Math.sol\":{\"keccak256\":\"0x90111e436eb6b3da34df087fba946d89aeaad5f3a6098ce92fd59e3d9dd1eb91\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d03947adf9192ca783302a612843527d64abbde3f881ef5bcc2d6d059921a678\",\"dweb:/ipfs/Qma8qkEjJEb3x4TWL5fUVCNsW7YKVBng8ZmAMaA5DNnY61\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol\":{\"keccak256\":\"0x24b04b8aacaaf1a4a0719117b29c9c3647b1f479c5ac2a60f5ff1bb6d839c238\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://43e46da9d9f49741ecd876a269e71bc7494058d7a8e9478429998adb5bc3eaa0\",\"dweb:/ipfs/QmUtp4cqzf22C5rJ76AabKADquGWcjsc33yjYXxXC4sDvy\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34\",\"dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol\":{\"keccak256\":\"0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd\",\"dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8\"]},\"node_modules/@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.4+commit.c7e474f2"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "contract MockZenlinkRouter",
+              "name": "_pool",
+              "type": "address"
+            },
+            {
+              "internalType": "contract MockERC20",
+              "name": "_lp",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getReserves",
+          "outputs": [
+            {
+              "internalType": "uint112",
+              "name": "reserve0",
+              "type": "uint112"
+            },
+            {
+              "internalType": "uint112",
+              "name": "reserve1",
+              "type": "uint112"
+            },
+            {
+              "internalType": "uint32",
+              "name": "blockTimestampLast",
+              "type": "uint32"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "lp",
+          "outputs": [
+            {
+              "internalType": "contract MockERC20",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "pool",
+          "outputs": [
+            {
+              "internalType": "contract MockZenlinkRouter",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "totalSupply",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@ensdomains/=node_modules/@ensdomains/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/mock/MockZenlinkPair.sol": "MockZenlinkPair"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/mock/MockERC20.sol": {
+        "keccak256": "0x51952f93f3a91e04f59ea08ebda5b353de7443f16ca4cbd5ad579079754090f2",
+        "urls": [
+          "bzz-raw://b6ce529cf0cb97a2bfe4deff3f1172b6c7c07f86ab114338d4cfaa05c4cde5db",
+          "dweb:/ipfs/QmQc9x9SWifgxMEDB8b1BLsWxf2ghAJpHq8KgnLvGpUjCf"
+        ],
+        "license": "MIT"
+      },
+      "contracts/mock/MockZenlinkPair.sol": {
+        "keccak256": "0x8bccc4edae2ea82e8d871ce7d850b9361cd54396d40ef7b327fb979cf8816cbb",
+        "urls": [
+          "bzz-raw://c2643b0dde73a53af0433ef9ba0c6c624f18854123e2ad0b2358205001c557a1",
+          "dweb:/ipfs/QmdJ3Gvk27SUFTZDbkCBMC7yyqqZFxTwTHiUaTjWNNMKD8"
+        ],
+        "license": "MIT"
+      },
+      "contracts/mock/MockZenlinkRouter.sol": {
+        "keccak256": "0x9267b0bf8323403c34717661695c94aad1e126f8e6d069193b507284bbef532c",
+        "urls": [
+          "bzz-raw://3cc52cae5f1809dc5d6e7c50e904464486db1fe199aa7a71314156074ef15a58",
+          "dweb:/ipfs/QmeK2yyNNfkXHinQhqNeqcRptSncAV8J7tuCZHzgEwcwF6"
+        ],
+        "license": "MIT"
+      },
+      "contracts/mock/libraries/Math.sol": {
+        "keccak256": "0x90111e436eb6b3da34df087fba946d89aeaad5f3a6098ce92fd59e3d9dd1eb91",
+        "urls": [
+          "bzz-raw://d03947adf9192ca783302a612843527d64abbde3f881ef5bcc2d6d059921a678",
+          "dweb:/ipfs/Qma8qkEjJEb3x4TWL5fUVCNsW7YKVBng8ZmAMaA5DNnY61"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol": {
+        "keccak256": "0x24b04b8aacaaf1a4a0719117b29c9c3647b1f479c5ac2a60f5ff1bb6d839c238",
+        "urls": [
+          "bzz-raw://43e46da9d9f49741ecd876a269e71bc7494058d7a8e9478429998adb5bc3eaa0",
+          "dweb:/ipfs/QmUtp4cqzf22C5rJ76AabKADquGWcjsc33yjYXxXC4sDvy"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+        "keccak256": "0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b",
+        "urls": [
+          "bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34",
+          "dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
+        "keccak256": "0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca",
+        "urls": [
+          "bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd",
+          "dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": {
+        "keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
+        "urls": [
+          "bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92",
+          "dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/mock/MockZenlinkPair.sol",
+    "id": 34706,
+    "exportedSymbols": {
+      "Context": [
+        72509
+      ],
+      "ERC20": [
+        70700
+      ],
+      "IERC20": [
+        70778
+      ],
+      "IERC20Metadata": [
+        70847
+      ],
+      "Math": [
+        35009
+      ],
+      "MockERC20": [
+        34425
+      ],
+      "MockZenlinkPair": [
+        34705
+      ],
+      "MockZenlinkRouter": [
+        34933
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "31:624:57",
+    "nodes": [
+      {
+        "id": 34633,
+        "nodeType": "PragmaDirective",
+        "src": "31:22:57",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 34634,
+        "nodeType": "ImportDirective",
+        "src": "55:33:57",
+        "nodes": [],
+        "absolutePath": "contracts/mock/MockZenlinkRouter.sol",
+        "file": "./MockZenlinkRouter.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 34706,
+        "sourceUnit": 34934,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 34705,
+        "nodeType": "ContractDefinition",
+        "src": "90:564:57",
+        "nodes": [
+          {
+            "id": 34637,
+            "nodeType": "VariableDeclaration",
+            "src": "121:29:57",
+            "nodes": [],
+            "constant": false,
+            "functionSelector": "16f0115b",
+            "mutability": "mutable",
+            "name": "pool",
+            "nameLocation": "146:4:57",
+            "scope": 34705,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_MockZenlinkRouter_$34933",
+              "typeString": "contract MockZenlinkRouter"
+            },
+            "typeName": {
+              "id": 34636,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 34635,
+                "name": "MockZenlinkRouter",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 34933,
+                "src": "121:17:57"
+              },
+              "referencedDeclaration": 34933,
+              "src": "121:17:57",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_MockZenlinkRouter_$34933",
+                "typeString": "contract MockZenlinkRouter"
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 34640,
+            "nodeType": "VariableDeclaration",
+            "src": "156:19:57",
+            "nodes": [],
+            "constant": false,
+            "functionSelector": "313c06a0",
+            "mutability": "mutable",
+            "name": "lp",
+            "nameLocation": "173:2:57",
+            "scope": 34705,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_MockERC20_$34425",
+              "typeString": "contract MockERC20"
+            },
+            "typeName": {
+              "id": 34639,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 34638,
+                "name": "MockERC20",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 34425,
+                "src": "156:9:57"
+              },
+              "referencedDeclaration": 34425,
+              "src": "156:9:57",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_MockERC20_$34425",
+                "typeString": "contract MockERC20"
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 34658,
+            "nodeType": "FunctionDefinition",
+            "src": "182:99:57",
+            "nodes": [],
+            "body": {
+              "id": 34657,
+              "nodeType": "Block",
+              "src": "234:47:57",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "id": 34651,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 34649,
+                      "name": "pool",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 34637,
+                      "src": "244:4:57",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_MockZenlinkRouter_$34933",
+                        "typeString": "contract MockZenlinkRouter"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 34650,
+                      "name": "_pool",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 34643,
+                      "src": "251:5:57",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_MockZenlinkRouter_$34933",
+                        "typeString": "contract MockZenlinkRouter"
+                      }
+                    },
+                    "src": "244:12:57",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_MockZenlinkRouter_$34933",
+                      "typeString": "contract MockZenlinkRouter"
+                    }
+                  },
+                  "id": 34652,
+                  "nodeType": "ExpressionStatement",
+                  "src": "244:12:57"
+                },
+                {
+                  "expression": {
+                    "id": 34655,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 34653,
+                      "name": "lp",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 34640,
+                      "src": "266:2:57",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_MockERC20_$34425",
+                        "typeString": "contract MockERC20"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 34654,
+                      "name": "_lp",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 34646,
+                      "src": "271:3:57",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_MockERC20_$34425",
+                        "typeString": "contract MockERC20"
+                      }
+                    },
+                    "src": "266:8:57",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_MockERC20_$34425",
+                      "typeString": "contract MockERC20"
+                    }
+                  },
+                  "id": 34656,
+                  "nodeType": "ExpressionStatement",
+                  "src": "266:8:57"
+                }
+              ]
+            },
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 34647,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 34643,
+                  "mutability": "mutable",
+                  "name": "_pool",
+                  "nameLocation": "212:5:57",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 34658,
+                  "src": "194:23:57",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_MockZenlinkRouter_$34933",
+                    "typeString": "contract MockZenlinkRouter"
+                  },
+                  "typeName": {
+                    "id": 34642,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 34641,
+                      "name": "MockZenlinkRouter",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 34933,
+                      "src": "194:17:57"
+                    },
+                    "referencedDeclaration": 34933,
+                    "src": "194:17:57",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_MockZenlinkRouter_$34933",
+                      "typeString": "contract MockZenlinkRouter"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 34646,
+                  "mutability": "mutable",
+                  "name": "_lp",
+                  "nameLocation": "229:3:57",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 34658,
+                  "src": "219:13:57",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_MockERC20_$34425",
+                    "typeString": "contract MockERC20"
+                  },
+                  "typeName": {
+                    "id": 34645,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 34644,
+                      "name": "MockERC20",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 34425,
+                      "src": "219:9:57"
+                    },
+                    "referencedDeclaration": 34425,
+                    "src": "219:9:57",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_MockERC20_$34425",
+                      "typeString": "contract MockERC20"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "193:40:57"
+            },
+            "returnParameters": {
+              "id": 34648,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "234:0:57"
+            },
+            "scope": 34705,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "id": 34694,
+            "nodeType": "FunctionDefinition",
+            "src": "291:262:57",
+            "nodes": [],
+            "body": {
+              "id": 34693,
+              "nodeType": "Block",
+              "src": "400:153:57",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "id": 34674,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 34667,
+                      "name": "reserve0",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 34661,
+                      "src": "410:8:57",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint112",
+                        "typeString": "uint112"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "arguments": [
+                        {
+                          "arguments": [],
+                          "expression": {
+                            "argumentTypes": [],
+                            "expression": {
+                              "id": 34670,
+                              "name": "pool",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 34637,
+                              "src": "429:4:57",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_MockZenlinkRouter_$34933",
+                                "typeString": "contract MockZenlinkRouter"
+                              }
+                            },
+                            "id": 34671,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "reservesT",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 34719,
+                            "src": "429:14:57",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_external_view$__$returns$_t_uint256_$",
+                              "typeString": "function () view external returns (uint256)"
+                            }
+                          },
+                          "id": 34672,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "429:16:57",
+                          "tryCall": false,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        ],
+                        "id": 34669,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "nodeType": "ElementaryTypeNameExpression",
+                        "src": "421:7:57",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_uint112_$",
+                          "typeString": "type(uint112)"
+                        },
+                        "typeName": {
+                          "id": 34668,
+                          "name": "uint112",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "421:7:57",
+                          "typeDescriptions": {}
+                        }
+                      },
+                      "id": 34673,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "421:25:57",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint112",
+                        "typeString": "uint112"
+                      }
+                    },
+                    "src": "410:36:57",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint112",
+                      "typeString": "uint112"
+                    }
+                  },
+                  "id": 34675,
+                  "nodeType": "ExpressionStatement",
+                  "src": "410:36:57"
+                },
+                {
+                  "expression": {
+                    "id": 34683,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 34676,
+                      "name": "reserve1",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 34663,
+                      "src": "456:8:57",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint112",
+                        "typeString": "uint112"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "arguments": [
+                        {
+                          "arguments": [],
+                          "expression": {
+                            "argumentTypes": [],
+                            "expression": {
+                              "id": 34679,
+                              "name": "pool",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 34637,
+                              "src": "475:4:57",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_MockZenlinkRouter_$34933",
+                                "typeString": "contract MockZenlinkRouter"
+                              }
+                            },
+                            "id": 34680,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "reservesN",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 34717,
+                            "src": "475:14:57",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_external_view$__$returns$_t_uint256_$",
+                              "typeString": "function () view external returns (uint256)"
+                            }
+                          },
+                          "id": 34681,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "475:16:57",
+                          "tryCall": false,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        ],
+                        "id": 34678,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "nodeType": "ElementaryTypeNameExpression",
+                        "src": "467:7:57",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_uint112_$",
+                          "typeString": "type(uint112)"
+                        },
+                        "typeName": {
+                          "id": 34677,
+                          "name": "uint112",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "467:7:57",
+                          "typeDescriptions": {}
+                        }
+                      },
+                      "id": 34682,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "467:25:57",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint112",
+                        "typeString": "uint112"
+                      }
+                    },
+                    "src": "456:36:57",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint112",
+                      "typeString": "uint112"
+                    }
+                  },
+                  "id": 34684,
+                  "nodeType": "ExpressionStatement",
+                  "src": "456:36:57"
+                },
+                {
+                  "expression": {
+                    "id": 34691,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 34685,
+                      "name": "blockTimestampLast",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 34665,
+                      "src": "502:18:57",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint32",
+                        "typeString": "uint32"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "arguments": [
+                        {
+                          "expression": {
+                            "id": 34688,
+                            "name": "block",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": -4,
+                            "src": "530:5:57",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_magic_block",
+                              "typeString": "block"
+                            }
+                          },
+                          "id": 34689,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "timestamp",
+                          "nodeType": "MemberAccess",
+                          "src": "530:15:57",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        ],
+                        "id": 34687,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "nodeType": "ElementaryTypeNameExpression",
+                        "src": "523:6:57",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_uint32_$",
+                          "typeString": "type(uint32)"
+                        },
+                        "typeName": {
+                          "id": 34686,
+                          "name": "uint32",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "523:6:57",
+                          "typeDescriptions": {}
+                        }
+                      },
+                      "id": 34690,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "523:23:57",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint32",
+                        "typeString": "uint32"
+                      }
+                    },
+                    "src": "502:44:57",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "id": 34692,
+                  "nodeType": "ExpressionStatement",
+                  "src": "502:44:57"
+                }
+              ]
+            },
+            "functionSelector": "0902f1ac",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getReserves",
+            "nameLocation": "300:11:57",
+            "parameters": {
+              "id": 34659,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "311:2:57"
+            },
+            "returnParameters": {
+              "id": 34666,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 34661,
+                  "mutability": "mutable",
+                  "name": "reserve0",
+                  "nameLocation": "345:8:57",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 34694,
+                  "src": "337:16:57",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint112",
+                    "typeString": "uint112"
+                  },
+                  "typeName": {
+                    "id": 34660,
+                    "name": "uint112",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "337:7:57",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint112",
+                      "typeString": "uint112"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 34663,
+                  "mutability": "mutable",
+                  "name": "reserve1",
+                  "nameLocation": "363:8:57",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 34694,
+                  "src": "355:16:57",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint112",
+                    "typeString": "uint112"
+                  },
+                  "typeName": {
+                    "id": 34662,
+                    "name": "uint112",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "355:7:57",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint112",
+                      "typeString": "uint112"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 34665,
+                  "mutability": "mutable",
+                  "name": "blockTimestampLast",
+                  "nameLocation": "380:18:57",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 34694,
+                  "src": "373:25:57",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint32",
+                    "typeString": "uint32"
+                  },
+                  "typeName": {
+                    "id": 34664,
+                    "name": "uint32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "373:6:57",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "336:63:57"
+            },
+            "scope": 34705,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 34704,
+            "nodeType": "FunctionDefinition",
+            "src": "559:93:57",
+            "nodes": [],
+            "body": {
+              "id": 34703,
+              "nodeType": "Block",
+              "src": "612:40:57",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "expression": {
+                        "id": 34699,
+                        "name": "lp",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 34640,
+                        "src": "629:2:57",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_MockERC20_$34425",
+                          "typeString": "contract MockERC20"
+                        }
+                      },
+                      "id": 34700,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "totalSupply",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 70199,
+                      "src": "629:14:57",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_view$__$returns$_t_uint256_$",
+                        "typeString": "function () view external returns (uint256)"
+                      }
+                    },
+                    "id": 34701,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "629:16:57",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 34698,
+                  "id": 34702,
+                  "nodeType": "Return",
+                  "src": "622:23:57"
+                }
+              ]
+            },
+            "functionSelector": "18160ddd",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "totalSupply",
+            "nameLocation": "568:11:57",
+            "parameters": {
+              "id": 34695,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "579:2:57"
+            },
+            "returnParameters": {
+              "id": 34698,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 34697,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 34704,
+                  "src": "603:7:57",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 34696,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "603:7:57",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "602:9:57"
+            },
+            "scope": 34705,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          34705
+        ],
+        "name": "MockZenlinkPair",
+        "nameLocation": "99:15:57",
+        "scope": 34706,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 57
+}

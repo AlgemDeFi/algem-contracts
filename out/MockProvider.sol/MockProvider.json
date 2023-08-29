@@ -1,0 +1,411 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_lendingPool",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "getLendingPool",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "lendingPool",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b5060405161013838038061013883398101604081905261002f91610054565b600080546001600160a01b0319166001600160a01b0392909216919091179055610082565b600060208284031215610065578081fd5b81516001600160a01b038116811461007b578182fd5b9392505050565b60a8806100906000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80630261bf8b146037578063a59a9973146060575b600080fd5b6000546001600160a01b03165b6040516001600160a01b03909116815260200160405180910390f35b6000546044906001600160a01b03168156fea2646970667358221220695bec5fdc91f9857f449610a99b4cd217643960eec1f9db554b3bfdbb44acdc64736f6c63430008040033",
+    "sourceMap": "55:237:136:-:0;;;116:77;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;160:11;:26;;-1:-1:-1;;;;;;160:26:136;-1:-1:-1;;;;;160:26:136;;;;;;;;;;55:237;;14:310:140;84:6;137:2;125:9;116:7;112:23;108:32;105:2;;;158:6;150;143:22;105:2;189:16;;-1:-1:-1;;;;;234:31:140;;224:42;;214:2;;285:6;277;270:22;214:2;313:5;95:229;-1:-1:-1;;;95:229:140:o;:::-;55:237:136;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080604052348015600f57600080fd5b506004361060325760003560e01c80630261bf8b146037578063a59a9973146060575b600080fd5b6000546001600160a01b03165b6040516001600160a01b03909116815260200160405180910390f35b6000546044906001600160a01b03168156fea2646970667358221220695bec5fdc91f9857f449610a99b4cd217643960eec1f9db554b3bfdbb44acdc64736f6c63430008040033",
+    "sourceMap": "55:237:136:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;199:91;246:7;272:11;-1:-1:-1;;;;;272:11:136;199:91;;;;-1:-1:-1;;;;;178:32:140;;;;160:51;;199:91:136;;;;;148:2:140;199:91:136;;;83:26;;;;;-1:-1:-1;;;;;83:26:136;;",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "getLendingPool()": "0261bf8b",
+    "lendingPool()": "a59a9973"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.4+commit.c7e474f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_lendingPool\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"getLendingPool\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"lendingPool\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"test/foundry/mocs/MockProvider.sol\":\"MockProvider\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@ensdomains/=node_modules/@ensdomains/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"test/foundry/mocs/MockProvider.sol\":{\"keccak256\":\"0x68211b20a8f03c328683c1a14d1f8d5835398b4a224723b4ffae3a07566491fc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b56be4680735b8acee38dde0d74ea1aafbc63b1c5fe8da39e497575634f1938f\",\"dweb:/ipfs/QmdcbeQiicMUkBKCw4A7fpvY3HarHk4SdEqo3d3ZEjM5Vn\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.4+commit.c7e474f2"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_lendingPool",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getLendingPool",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "lendingPool",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@ensdomains/=node_modules/@ensdomains/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "test/foundry/mocs/MockProvider.sol": "MockProvider"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "test/foundry/mocs/MockProvider.sol": {
+        "keccak256": "0x68211b20a8f03c328683c1a14d1f8d5835398b4a224723b4ffae3a07566491fc",
+        "urls": [
+          "bzz-raw://b56be4680735b8acee38dde0d74ea1aafbc63b1c5fe8da39e497575634f1938f",
+          "dweb:/ipfs/QmdcbeQiicMUkBKCw4A7fpvY3HarHk4SdEqo3d3ZEjM5Vn"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "test/foundry/mocs/MockProvider.sol",
+    "id": 77860,
+    "exportedSymbols": {
+      "MockProvider": [
+        77859
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "31:261:136",
+    "nodes": [
+      {
+        "id": 77838,
+        "nodeType": "PragmaDirective",
+        "src": "31:22:136",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 77859,
+        "nodeType": "ContractDefinition",
+        "src": "55:237:136",
+        "nodes": [
+          {
+            "id": 77840,
+            "nodeType": "VariableDeclaration",
+            "src": "83:26:136",
+            "nodes": [],
+            "constant": false,
+            "functionSelector": "a59a9973",
+            "mutability": "mutable",
+            "name": "lendingPool",
+            "nameLocation": "98:11:136",
+            "scope": 77859,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 77839,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "83:7:136",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 77850,
+            "nodeType": "FunctionDefinition",
+            "src": "116:77:136",
+            "nodes": [],
+            "body": {
+              "id": 77849,
+              "nodeType": "Block",
+              "src": "150:43:136",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "id": 77847,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 77845,
+                      "name": "lendingPool",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 77840,
+                      "src": "160:11:136",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 77846,
+                      "name": "_lendingPool",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 77842,
+                      "src": "174:12:136",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "160:26:136",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 77848,
+                  "nodeType": "ExpressionStatement",
+                  "src": "160:26:136"
+                }
+              ]
+            },
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 77843,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 77842,
+                  "mutability": "mutable",
+                  "name": "_lendingPool",
+                  "nameLocation": "136:12:136",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 77850,
+                  "src": "128:20:136",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 77841,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "128:7:136",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "127:22:136"
+            },
+            "returnParameters": {
+              "id": 77844,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "150:0:136"
+            },
+            "scope": 77859,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "id": 77858,
+            "nodeType": "FunctionDefinition",
+            "src": "199:91:136",
+            "nodes": [],
+            "body": {
+              "id": 77857,
+              "nodeType": "Block",
+              "src": "255:35:136",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "id": 77855,
+                    "name": "lendingPool",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 77840,
+                    "src": "272:11:136",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "functionReturnParameters": 77854,
+                  "id": 77856,
+                  "nodeType": "Return",
+                  "src": "265:18:136"
+                }
+              ]
+            },
+            "functionSelector": "0261bf8b",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getLendingPool",
+            "nameLocation": "208:14:136",
+            "parameters": {
+              "id": 77851,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "222:2:136"
+            },
+            "returnParameters": {
+              "id": 77854,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 77853,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 77858,
+                  "src": "246:7:136",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 77852,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "246:7:136",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "245:9:136"
+            },
+            "scope": 77859,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          77859
+        ],
+        "name": "MockProvider",
+        "nameLocation": "64:12:136",
+        "scope": 77860,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 136
+}

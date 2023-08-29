@@ -1,0 +1,198 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "gaugeToken",
+          "type": "address"
+        }
+      ],
+      "name": "mint",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "mint(address)": "6a627842"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.4+commit.c7e474f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"gaugeToken\",\"type\":\"address\"}],\"name\":\"mint\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/interfaces/IMinter.sol\":\"IMinter\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@ensdomains/=node_modules/@ensdomains/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/interfaces/IMinter.sol\":{\"keccak256\":\"0x43e71b955345659380cc82a00ac57d368f2d30b74579bb56334bef7976277083\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://41fb1e6b51294795fc4fafefa2fad28fba9ecfe4eff9101b6e7d9e1bc7c48c0a\",\"dweb:/ipfs/QmfZXeTDLkkGFksJutrppwoKnAybycMNtcsusTJFCLQfkU\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.4+commit.c7e474f2"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "gaugeToken",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "mint"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@ensdomains/=node_modules/@ensdomains/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/interfaces/IMinter.sol": "IMinter"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/interfaces/IMinter.sol": {
+        "keccak256": "0x43e71b955345659380cc82a00ac57d368f2d30b74579bb56334bef7976277083",
+        "urls": [
+          "bzz-raw://41fb1e6b51294795fc4fafefa2fad28fba9ecfe4eff9101b6e7d9e1bc7c48c0a",
+          "dweb:/ipfs/QmfZXeTDLkkGFksJutrppwoKnAybycMNtcsusTJFCLQfkU"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/interfaces/IMinter.sol",
+    "id": 28227,
+    "exportedSymbols": {
+      "IMinter": [
+        28226
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "31:94:36",
+    "nodes": [
+      {
+        "id": 28220,
+        "nodeType": "PragmaDirective",
+        "src": "31:22:36",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 28226,
+        "nodeType": "ContractDefinition",
+        "src": "55:69:36",
+        "nodes": [
+          {
+            "id": 28225,
+            "nodeType": "FunctionDefinition",
+            "src": "79:43:36",
+            "nodes": [],
+            "functionSelector": "6a627842",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "mint",
+            "nameLocation": "88:4:36",
+            "parameters": {
+              "id": 28223,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28222,
+                  "mutability": "mutable",
+                  "name": "gaugeToken",
+                  "nameLocation": "101:10:36",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28225,
+                  "src": "93:18:36",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 28221,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "93:7:36",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "92:20:36"
+            },
+            "returnParameters": {
+              "id": 28224,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "121:0:36"
+            },
+            "scope": 28226,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          28226
+        ],
+        "name": "IMinter",
+        "nameLocation": "65:7:36",
+        "scope": 28227,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 36
+}
