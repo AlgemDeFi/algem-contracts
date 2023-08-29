@@ -1,4 +1,4 @@
-![Algem Logo](https://github.com/DippyArtu/algem/blob/main/pics/logo-alpha.png?raw=true)
+![Algem Logo](https://github.com/azhlbn/LendingAdapter/blob/main/logo.png?raw=true)
 
 # Install
 Clone the source code, install dependencies.
