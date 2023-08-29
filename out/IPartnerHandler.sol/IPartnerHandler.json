@@ -18,19 +18,6 @@
       ],
       "stateMutability": "view",
       "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "totalStakedASTR",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
     }
   ],
   "bytecode": {
@@ -44,10 +31,9 @@
     "linkReferences": {}
   },
   "methodIdentifiers": {
-    "calc(address)": "083380b6",
-    "totalStakedASTR()": "1a1fb232"
+    "calc(address)": "083380b6"
   },
-  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.4+commit.c7e474f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"calc\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalStakedASTR\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/interfaces/IPartnerHandler.sol\":\"IPartnerHandler\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@ensdomains/=node_modules/@ensdomains/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/interfaces/IPartnerHandler.sol\":{\"keccak256\":\"0xe21ebea595e6606b3b7d07abfdf3d01da878aa7ef8ae688dd41f4d3b502f58e2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a396815e15a50abace371a1cc9243ca4aa5b04862c3830679f6558885dcc03c0\",\"dweb:/ipfs/QmZZxqXhAsNmtKDJHmTa6pJ8kkhiHqSLK1Vv7xAoLY3xMW\"]}},\"version\":1}",
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.4+commit.c7e474f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"calc\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/interfaces/IPartnerHandler.sol\":\"IPartnerHandler\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@ensdomains/=node_modules/@ensdomains/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/interfaces/IPartnerHandler.sol\":{\"keccak256\":\"0x9c2d14a1fa09f669d7e00d5986d208b6dcdc8394e463b239e27f98f26899c229\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b12f07e4436f54d6a728457cd1adf6420bc3cfdfcecdee0664aabd87813cc738\",\"dweb:/ipfs/QmTwA9rX5LEcRRuiTrNweMcFaXVqEz4dFPZZtHQEhsFYu3\"]}},\"version\":1}",
   "metadata": {
     "compiler": {
       "version": "0.8.4+commit.c7e474f2"
@@ -73,19 +59,6 @@
               "type": "uint256"
             }
           ]
-        },
-        {
-          "inputs": [],
-          "stateMutability": "view",
-          "type": "function",
-          "name": "totalStakedASTR",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ]
         }
       ],
       "devdoc": {
@@ -103,9 +76,7 @@
       "remappings": [
         ":@ensdomains/=node_modules/@ensdomains/",
         ":@openzeppelin/=node_modules/@openzeppelin/",
-        ":ds-test/=lib/forge-std/lib/ds-test/src/",
         ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
-        ":forge-std/=lib/forge-std/src/",
         ":hardhat-deploy/=node_modules/hardhat-deploy/",
         ":hardhat/=node_modules/hardhat/"
       ],
@@ -123,10 +94,10 @@
     },
     "sources": {
       "contracts/interfaces/IPartnerHandler.sol": {
-        "keccak256": "0xe21ebea595e6606b3b7d07abfdf3d01da878aa7ef8ae688dd41f4d3b502f58e2",
+        "keccak256": "0x9c2d14a1fa09f669d7e00d5986d208b6dcdc8394e463b239e27f98f26899c229",
         "urls": [
-          "bzz-raw://a396815e15a50abace371a1cc9243ca4aa5b04862c3830679f6558885dcc03c0",
-          "dweb:/ipfs/QmZZxqXhAsNmtKDJHmTa6pJ8kkhiHqSLK1Vv7xAoLY3xMW"
+          "bzz-raw://b12f07e4436f54d6a728457cd1adf6420bc3cfdfcecdee0664aabd87813cc738",
+          "dweb:/ipfs/QmTwA9rX5LEcRRuiTrNweMcFaXVqEz4dFPZZtHQEhsFYu3"
         ],
         "license": "MIT"
       }
@@ -135,19 +106,19 @@
   },
   "ast": {
     "absolutePath": "contracts/interfaces/IPartnerHandler.sol",
-    "id": 29028,
+    "id": 5951,
     "exportedSymbols": {
       "IPartnerHandler": [
-        29027
+        5950
       ]
     },
     "nodeType": "SourceUnit",
-    "src": "31:179:41",
+    "src": "31:112:16",
     "nodes": [
       {
-        "id": 29014,
+        "id": 5942,
         "nodeType": "PragmaDirective",
-        "src": "31:22:41",
+        "src": "31:22:16",
         "nodes": [],
         "literals": [
           "solidity",
@@ -156,34 +127,34 @@
         ]
       },
       {
-        "id": 29027,
+        "id": 5950,
         "nodeType": "ContractDefinition",
-        "src": "55:154:41",
+        "src": "56:86:16",
         "nodes": [
           {
-            "id": 29021,
+            "id": 5949,
             "nodeType": "FunctionDefinition",
-            "src": "87:55:41",
+            "src": "88:52:16",
             "nodes": [],
             "functionSelector": "083380b6",
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "calc",
-            "nameLocation": "96:4:41",
+            "nameLocation": "97:4:16",
             "parameters": {
-              "id": 29017,
+              "id": 5945,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 29016,
+                  "id": 5944,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 29021,
-                  "src": "101:7:41",
+                  "scope": 5949,
+                  "src": "102:7:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -191,10 +162,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 29015,
+                    "id": 5943,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "101:7:41",
+                    "src": "102:7:16",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -204,21 +175,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "100:9:41"
+              "src": "101:9:16"
             },
             "returnParameters": {
-              "id": 29020,
+              "id": 5948,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 29019,
+                  "id": 5947,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 29021,
-                  "src": "133:7:41",
+                  "scope": 5949,
+                  "src": "134:4:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -226,10 +197,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 29018,
-                    "name": "uint256",
+                    "id": 5946,
+                    "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "133:7:41",
+                    "src": "134:4:16",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -238,65 +209,9 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "132:9:41"
+              "src": "133:6:16"
             },
-            "scope": 29027,
-            "stateMutability": "view",
-            "virtual": false,
-            "visibility": "external"
-          },
-          {
-            "id": 29026,
-            "nodeType": "FunctionDefinition",
-            "src": "148:59:41",
-            "nodes": [],
-            "functionSelector": "1a1fb232",
-            "implemented": false,
-            "kind": "function",
-            "modifiers": [],
-            "name": "totalStakedASTR",
-            "nameLocation": "157:15:41",
-            "parameters": {
-              "id": 29022,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "172:2:41"
-            },
-            "returnParameters": {
-              "id": 29025,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 29024,
-                  "mutability": "mutable",
-                  "name": "",
-                  "nameLocation": "-1:-1:-1",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 29026,
-                  "src": "198:7:41",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 29023,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "198:7:41",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "visibility": "internal"
-                }
-              ],
-              "src": "197:9:41"
-            },
-            "scope": 29027,
+            "scope": 5950,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
@@ -308,15 +223,15 @@
         "contractKind": "interface",
         "fullyImplemented": false,
         "linearizedBaseContracts": [
-          29027
+          5950
         ],
         "name": "IPartnerHandler",
-        "nameLocation": "65:15:41",
-        "scope": 29028,
+        "nameLocation": "66:15:16",
+        "scope": 5951,
         "usedErrors": []
       }
     ],
     "license": "MIT"
   },
-  "id": 41
+  "id": 16
 }
