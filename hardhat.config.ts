@@ -4,7 +4,6 @@ import "@nomiclabs/hardhat-ethers";
 import "hardhat-deploy";
 import '@typechain/hardhat'
 import "@nomicfoundation/hardhat-toolbox";
-import "./tasks/index";
 
 import * as dotenv from "dotenv";
 

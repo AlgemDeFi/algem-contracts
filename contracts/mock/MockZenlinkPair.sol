@@ -1,13 +1,13 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import "./MockArthswapRouter.sol";
+import "./MockZenlinkRouter.sol";
 
-contract MockArthswapPair {
-    MockArthswapRouter public pool;
+contract MockZenlinkPair {
+    MockZenlinkRouter public pool;
     MockERC20 public lp;
 
-    constructor(MockArthswapRouter _pool, MockERC20 _lp) {
+    constructor(MockZenlinkRouter _pool, MockERC20 _lp) {
         pool = _pool;
         lp = _lp;
     }
