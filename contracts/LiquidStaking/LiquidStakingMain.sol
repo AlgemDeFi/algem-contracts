@@ -15,7 +15,7 @@ contract LiquidStakingMain is AccessControlUpgradeable, LiquidStakingStorage {
         require(_utilities.length > 0, "No one utility selected");
         require(_utilities.length == _amounts.length, "Incorrect arrays length");
         _;
-    }   
+    }  
 
     /// @notice only distributor modifier
     modifier onlyDistributor() {
@@ -214,7 +214,7 @@ contract LiquidStakingMain is AccessControlUpgradeable, LiquidStakingStorage {
         payable(msg.sender).sendValue(val);
         emit Withdrawn(msg.sender, val);
     }
-    
+
     // --------------------------------------------------------------------
     // Every eras functions -----------------------------------------------
     // --------------------------------------------------------------------
@@ -400,9 +400,20 @@ contract LiquidStakingMain is AccessControlUpgradeable, LiquidStakingStorage {
     function syncHarvest(address _user, string[] memory _utilities) 
     external
     onlyRole(MANAGER)
-    updateRewards(_user, _utilities) {}
+    updateRewards(_user, _utilities) {}    
 
-    
+    /// @notice Allow to add a new partner to correct rewards distribution
+    /// @param _partner Partner's pool contract address
+    function addPartner(address _partner) external onlyRole(MANAGER) {
+        isPartner[_partner] = true;
+        partners.push(_partner);
+    }
+
+    /// @notice Security update
+    function update() external onlyRole(MANAGER) {
+        // Remove redundant struct
+        delete dapps["Algem"];
+    }
 
     // --------------------------------------------------------------------
     // Management functions // For Distributors contracts -----------------
@@ -485,6 +496,8 @@ contract LiquidStakingMain is AccessControlUpgradeable, LiquidStakingStorage {
     /// @param _amounts => amounts from claim
     function _claim(string[] memory _utilities, uint256[] memory _amounts) 
     private {
+        require(!isPartner[msg.sender], "Claim not allowed for partner pools");
+
         uint256 l = _utilities.length;
         uint256 transferAmount;
 
@@ -549,7 +562,7 @@ contract LiquidStakingMain is AccessControlUpgradeable, LiquidStakingStorage {
     function calcUserRewards(string memory _utility, address _user) private view returns (uint256[2] memory userData, uint8, uint256, bool) {
         Staker storage user = dapps[_utility].stakers[_user];
     
-        if (user.lastClaimedEra >= lastUpdated || user.lastClaimedEra == 0) return (userData, 0, 0, false);
+        if (isPartner[_user] || user.lastClaimedEra >= lastUpdated || user.lastClaimedEra == 0) return (userData, 0, 0, false);
 
         (userData[0], ) = nftDistr.getUserEraBalance(_utility, _user, user.lastClaimedEra - 1);
         uint8 userEraFee = nftDistr.getUserEraFee(_user, user.lastClaimedEra - 1);

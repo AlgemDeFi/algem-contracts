@@ -6,6 +6,7 @@ import '@typechain/hardhat'
 import "@nomicfoundation/hardhat-toolbox";
 import "./tasks/index";
 import "@nomicfoundation/hardhat-foundry";
+import "hardhat-contract-sizer";
 
 import * as dotenv from "dotenv";
 

@@ -1,3 +1,7 @@
+// Sources flattened with hardhat v2.14.1 https://hardhat.org
+
+// File contracts/NASTR.sol
+
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 

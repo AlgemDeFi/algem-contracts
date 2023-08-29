@@ -754,15 +754,8 @@ contract Sio2Adapter is
 
         // moving by borrowing assets for current user
         for (uint256 i; i < user.borrowedAssets.length; ) {
-            (
-                ,
-                string memory assetName,
-                ,
-                ,
-                ,
-                ,
-                ,
-                ,
+            ( , string memory assetName,
+                , , , , , ,
                 uint256 assetAccBTokensPerShare,
                 uint256 assetAccBorrowedRewardsPerShare
             ) = assetManager.assetInfo(user.borrowedAssets[i]);
