@@ -64,7 +64,7 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     );
     event SetAbilityToAddLpAndGauge(bool indexed _b);
     event UpdateBalSuccess(address user, string utilityName, uint256 amount);
-    event UpdateBalError(address user, string utilityName, uint256 amount, string reason);
+    event UpdateBalError(address user, string utilityName, uint256 amount, bytes reason);
 
     // @notice Updates rewards
     modifier update() {
@@ -417,10 +417,6 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         revert("It is not possible to renounce ownership!");
     }
 
-    function setRewardDebt(address adr, uint256 value) public {
-        rewardDebt[adr] = value;
-    }
-
     // @notice shows total staked astr amount
     function totalStakedASTR() public view returns (uint256) {
         uint256[] memory amounts = new uint256[](2);
@@ -434,7 +430,7 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         uint256 nastrBalAfter = calc(_user);
         try adaptersDistributor.updateBalanceInAdapter(utilityName, _user, nastrBalAfter) {
             emit UpdateBalSuccess(_user, utilityName, nastrBalAfter);
-        } catch Error(string memory reason) {
+        } catch (bytes memory reason) {
             emit UpdateBalError(_user, utilityName, nastrBalAfter, reason);
         }
     }
