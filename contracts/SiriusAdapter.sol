@@ -9,6 +9,7 @@ import "./interfaces/ISiriusFarm.sol";
 import "./interfaces/ISiriusPool.sol";
 import "./interfaces/IMinter.sol";
 import "./interfaces/IAdaptersDistributor.sol";
+import "./LiquidStaking/LiquidStaking.sol";
 
 contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     using AddressUpgradeable for address payable;
@@ -40,6 +41,8 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     IAdaptersDistributor public adaptersDistributor;
     string public utilityName;
 
+    bool private _paused;
+
     event AddLiquidity(
         address indexed user,
         uint256[] indexed amounts,
@@ -65,6 +68,8 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     event SetAbilityToAddLpAndGauge(bool indexed _b);
     event UpdateBalSuccess(address user, string utilityName, uint256 amount);
     event UpdateBalError(address user, string utilityName, uint256 amount, string reason);
+    event Paused(address account);
+    event Unpaused(address account);
 
     // @notice Updates rewards
     modifier update() {
@@ -74,6 +79,19 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
             updatePoolRewards();
         }
         harvestRewards();
+        _;
+    }
+
+    /// @notice Modifier to make a function callable only when the contract is not paused
+    modifier whenNotPaused() {
+        require(!_paused, "Not available when paused");
+        _;
+    }
+
+    /// @notice Provides access only to managers
+    modifier onlyManager() {
+        LiquidStaking ls = LiquidStaking(payable(0x70d264472327B67898c919809A9dc4759B6c0f27));
+        require(ls.hasRole(ls.MANAGER(), msg.sender), "For MANAGER role only");
         _;
     }
 
@@ -136,6 +154,7 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         external
         payable
         nonReentrant
+        whenNotPaused
     {
         require(
             msg.value == _amounts[0],
@@ -180,7 +199,7 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
     // @notice Remove liquidity from the pool
     // @param _amounts Amount of LP tokens to remove
-    function removeLiquidity(uint256 _amount) public nonReentrant {
+    function removeLiquidity(uint256 _amount) public nonReentrant whenNotPaused {
         require(_amount > 0, "Should be greater than zero");
         require(lpBalances[msg.sender] >= _amount, "Not enough LP");
 
@@ -210,7 +229,7 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     // @notice With this function users can transfer LP tokens to their balance in the adapter contract
     //         Needed to move from "handler contracts" to adapters
     // @param _autoDeposit Allows to deposit LP at the same tx
-    function addLp(uint256 _amount, bool _autoDeposit) external nonReentrant {
+    function addLp(uint256 _amount, bool _autoDeposit) external nonReentrant whenNotPaused {
         require(abilityToAddLpAndGauge, "This functionality disabled");
         require(
             lp.balanceOf(msg.sender) >= _amount,
@@ -229,7 +248,7 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     }
 
     // @notice Receive Gauge tokens from user
-    function addGauge(uint256 _amount) external update nonReentrant {
+    function addGauge(uint256 _amount) external update nonReentrant whenNotPaused {
         require(abilityToAddLpAndGauge, "Functionality disabled");
         require(
             gauge.balanceOf(msg.sender) >= _amount,
@@ -251,7 +270,7 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
     // @notice Deposit LP tokens to farm pool and receives Gauge tokens instead
     // @param _amount Amount of LP tokens
-    function depositLP(uint256 _amount) public update {
+    function depositLP(uint256 _amount) public update whenNotPaused {
         require(lpBalances[msg.sender] >= _amount, "Not enough LP tokens");
         require(_amount > 0, "Should be greater than zero");
 
@@ -279,7 +298,7 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     // @notice Receives LP tokens back instead of Gauge
     // @param _amount Amount of Gauge tokens
     // @param _autoWithdraw If true remove all liquidity at the same tx
-    function withdrawLP(uint256 _amount, bool _autoWithdraw) external update {
+    function withdrawLP(uint256 _amount, bool _autoWithdraw) external update whenNotPaused {
         require(
             gaugeBalances[msg.sender] >= _amount,
             "Not enough Gauge tokens"
@@ -357,7 +376,7 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     }
 
     // @notice For claim rewards by users
-    function claim() external update nonReentrant {
+    function claim() external update nonReentrant whenNotPaused {
         require(rewards[msg.sender] > 0, "User has no any rewards");
         uint256 comissionPart = rewards[msg.sender] / REVENUE_FEE; // 10% comission part which go to revenue pool
         uint256 rewardsToClaim = rewards[msg.sender] - comissionPart;
@@ -380,17 +399,19 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     // @notice Needs to check user rewards
     // @param _user User address
     // @return sum Amount of penging rewards
-    function pendingRewards(address _user) external view returns (uint256 sum) {
+    function pendingRewards(address _user) external view returns (uint256 userRewards) {
         uint256 stakedAmount = gaugeBalances[_user];
         if (stakedAmount > 0) {
-            sum =
+            userRewards =
                 rewards[_user] +
                 (stakedAmount * accumulatedRewardsPerShare) /
                 REWARDS_PRECISION -
                 rewardDebt[_user];
         } else {
-            sum = rewards[_user];
+            userRewards = rewards[_user];
         }
+        uint256 comissionPart = userRewards / REVENUE_FEE;
+        userRewards -= comissionPart;
     }
 
     // @notice Get share of n tokens in pool for user
@@ -424,5 +445,17 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     // @notice set utilityName
     function setUtilityName(string memory _utilityName) external onlyOwner {
         utilityName = _utilityName;
+    }
+
+    /// @notice Disabling funcs with the whenNotPaused modifier
+    function pause() external onlyManager {
+        _paused = true;
+        emit Paused(msg.sender);
+    }
+
+    /// @notice Enabling funcs with the whenNotPaused modifier
+    function unpause() external onlyManager {
+        _paused = false;
+        emit Unpaused(msg.sender);
     }
 }

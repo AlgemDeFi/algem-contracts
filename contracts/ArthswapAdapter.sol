@@ -10,6 +10,7 @@ import "./interfaces/IMasterChef.sol";
 import "./interfaces/IPancakePair.sol";
 import "./interfaces/IPartnerHandler.sol";
 import "./interfaces/IAdaptersDistributor.sol";
+import "./LiquidStaking/LiquidStaking.sol";
 
 contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPartnerHandler {
     using SafeERC20Upgradeable for IERC20Upgradeable;
@@ -46,6 +47,8 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
     address[] public users;
     mapping(address => bool) public isUser;
 
+    bool private _paused;
+
     //Events
     event AddLiquidity(
         address indexed user,
@@ -72,6 +75,8 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
     );
     event UpdateBalSuccess(address user, string utilityName, uint256 amount);
     event UpdateBalError(address user, string utilityName, uint256 amount, string reason);
+    event Paused(address account);
+    event Unpaused(address account);
 
     // @notice Updates rewards
     modifier update() {
@@ -81,6 +86,19 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
             updatePoolRewards();
         }
         harvestRewards();
+        _;
+    }
+
+    /// @notice Modifier to make a function callable only when the contract is not paused
+    modifier whenNotPaused() {
+        require(!_paused, "Not available when paused");
+        _;
+    }
+
+    /// @notice Provides access only to managers
+    modifier onlyManager() {
+        LiquidStaking ls = LiquidStaking(payable(0x70d264472327B67898c919809A9dc4759B6c0f27));
+        require(ls.hasRole(ls.MANAGER(), msg.sender), "For MANAGER role only");
         _;
     }
 
@@ -135,6 +153,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
         external
         payable
         nonReentrant
+        whenNotPaused
     {
         require(
             msg.value == _amounts[0],
@@ -197,6 +216,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
     function removeLiquidity(uint256 _amount)
         public
         nonReentrant
+        whenNotPaused
     {
         require(_amount > 0, "Should be greater than zero");
         require(lpBalances[msg.sender] >= _amount, "Not enough LP tokens");
@@ -241,6 +261,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
     function addLp(uint256 _amount, bool _autoDeposit)
         external
         nonReentrant
+        whenNotPaused
     {
         require(_amount > 0, "Should be greater than zero");
         require(
@@ -263,7 +284,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
 
     // @notice Deposit LP tokens to ARSW allocation
     // @param _amount Number of LP tokens
-    function depositLP(uint256 _amount) public update {
+    function depositLP(uint256 _amount) public update whenNotPaused {
         require(lpBalances[msg.sender] >= _amount, "Not enough LP tokens");
         require(_amount > 0, "Should be greater than zero");
 
@@ -293,6 +314,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
     function withdrawLP(uint256 _amount, bool _autoWithdraw)
         external
         update
+        whenNotPaused
     {
         require(
             depositedLp[msg.sender] >= _amount,
@@ -387,7 +409,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
     }
 
     // @notice For claim rewards by users
-    function claim() external update nonReentrant {
+    function claim() external update nonReentrant whenNotPaused {
         if (rewards[msg.sender] == 0) return;
 
         // @dev Decrease comission part to zero until the staking launch
@@ -407,17 +429,19 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
     // @notice Needs to check user rewards
     // @param _user User address
     // @return sum Amount of penging rewards
-    function pendingRewards(address _user) public view returns (uint256 sum) {
+    function pendingRewards(address _user) public view returns (uint256 userRewards) {
         uint256 stakedAmount = depositedLp[_user];
         if (stakedAmount > 0) {
-            sum =
+            userRewards =
                 rewards[_user] +
                 (stakedAmount * accumulatedRewardsPerShare) /
                 REWARDS_PRECISION -
                 rewardDebt[_user];
         } else {
-            sum = rewards[_user];
+            userRewards = rewards[_user];
         }
+        uint256 comissionPart = userRewards / REVENUE_FEE;
+        userRewards -= comissionPart;
     }
 
     // @notice Get share of n tokens in pool for user
@@ -536,5 +560,17 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
     // @notice returns users list
     function getUsers() external view returns (address[] memory) {
         return users;
+    }
+
+    /// @notice Disabling funcs with the whenNotPaused modifier
+    function pause() external onlyManager {
+        _paused = true;
+        emit Paused(msg.sender);
+    }
+
+    /// @notice Enabling funcs with the whenNotPaused modifier
+    function unpause() external onlyManager {
+        _paused = false;
+        emit Unpaused(msg.sender);
     }
 }

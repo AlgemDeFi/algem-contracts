@@ -9,6 +9,7 @@ import "./interfaces/IKaglaFarm.sol";
 import "./interfaces/IKaglaPool.sol";
 import "./interfaces/IMinter.sol";
 import "./interfaces/IAdaptersDistributor.sol";
+import "./LiquidStaking/LiquidStaking.sol";
 
 contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     using AddressUpgradeable for address payable;
@@ -40,6 +41,8 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     IAdaptersDistributor public adaptersDistributor;
     string public utilityName;
 
+    bool private _paused;
+
     event AddLiquidity(
         address indexed user,
         uint256[2] indexed amounts,
@@ -65,8 +68,16 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     event SetAbilityToAddLpAndGauge(bool indexed _b);
     event UpdateBalSuccess(address user, string utilityName, uint256 amount);
     event UpdateBalError(address user, string utilityName, uint256 amount, bytes reason);
+    event Paused(address account);
+    event Unpaused(address account);
 
-    // @notice Updates rewards
+    /// @notice Modifier to make a function callable only when the contract is not paused
+    modifier whenNotPaused() {
+        require(!_paused, "Not available when paused");
+        _;
+    }
+
+    /// @notice Updates rewards
     modifier update() {
         // check if there are unclaimed rewards
         uint256 unclaimedRewards = farm.claimable_tokens(address(this));
@@ -74,6 +85,13 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
             updatePoolRewards();
         }
         harvestRewards();
+        _;
+    }
+
+    /// @notice Provides access only to managers
+    modifier onlyManager() {
+        LiquidStaking ls = LiquidStaking(payable(0x70d264472327B67898c919809A9dc4759B6c0f27));
+        require(ls.hasRole(ls.MANAGER(), msg.sender), "For MANAGER role only");
         _;
     }
 
@@ -103,13 +121,13 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         setAbilityToAddLpAndGauge(true);
     }
 
-    // @notice To receive funds from pool contrct
+    /// @notice To receive funds from pool contrct
     receive() external payable {
         require(msg.sender == address(pool), "Sending tokens not allowed");
     }
 
-    // @notice Withdraw revenue part
-    // @param _amount Amount of funds to withdraw
+    /// @notice Withdraw revenue part
+    /// @param _amount Amount of funds to withdraw
     function withdrawRevenue(uint256 _amount) external onlyOwner {
         require(
             kgl.balanceOf(address(this)) >= _amount,
@@ -120,22 +138,23 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         kgl.safeTransfer(msg.sender, _amount);
     }
 
-    // @notice After the transition of all users to adapters
-    //         addLp() and addGauge() will be disabled by this function
-    // @param _b enable or disable functionality
+    /// @notice After the transition of all users to adapters
+    ///         addLp() and addGauge() will be disabled by this function
+    /// @param _b enable or disable functionality
     function setAbilityToAddLpAndGauge(bool _b) public onlyOwner {
         abilityToAddLpAndGauge = _b;
         emit SetAbilityToAddLpAndGauge(_b);
     }
 
-    // @notice Add liquidity to the pool with the given amounts of tokens
-    // @param _amounts The amounts of each token to add
-    //        idx 0 is ASTR, idx 1 is nASTR
-    // @param _autoStake If true, LP tokens go to stake at the same tx
+    /// @notice Add liquidity to the pool with the given amounts of tokens
+    /// @param _amounts The amounts of each token to add
+    ///        idx 0 is ASTR, idx 1 is nASTR
+    /// @param _autoStake If true, LP tokens go to stake at the same tx
     function addLiquidity(uint256[] calldata _amounts, bool _autoStake)
         external
         payable
         nonReentrant
+        whenNotPaused
     {
         require(
             msg.value == _amounts[0],
@@ -182,11 +201,12 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         emit AddLiquidity(msg.sender, amountsToSend, _autoStake, lpAmount);
     }
 
-    // @notice Remove liquidity from the pool
-    // @param _amounts Amount of LP tokens to remove
+    /// @notice Remove liquidity from the pool
+    /// @param _amount Amount of LP tokens to remove
     function removeLiquidity(uint256 _amount)
         public
         nonReentrant
+        whenNotPaused
     {
         require(_amount > 0, "Should be greater than zero");
         require(lpBalances[msg.sender] >= _amount, "Not enough LP!");
@@ -214,12 +234,13 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         emit RemoveLiquidity(msg.sender, _amount, receivedTokens);
     }
 
-    // @notice With this function users can transfer LP tokens to their balance in the adapter contract
-    //         Needed to move from "handler contracts" to adapters
-    // @param _autoDeposit Allows to deposit LP at the same tx
+    /// @notice With this function users can transfer LP tokens to their balance in the adapter contract
+    ///         Needed to move from "handler contracts" to adapters
+    /// @param _autoDeposit Allows to deposit LP at the same tx
     function addLp(uint256 _amount, bool _autoDeposit)
         external
         nonReentrant
+        whenNotPaused
     {
         require(!abilityToAddLpAndGauge, "Functionality disabled");
         require(
@@ -238,11 +259,12 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         }
     }
 
-    // @notice Receive Gauge tokens from user
+    /// @notice Receive Gauge tokens from user
     function addGauge(uint256 _amount)
         external
         update
         nonReentrant
+        whenNotPaused
     {
         require(!abilityToAddLpAndGauge, "Functionality disabled");
         require(
@@ -261,9 +283,9 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
             REWARDS_PRECISION;
     }
 
-    // @notice Deposit LP tokens to farm pool and receives Gauge tokens instead
-    // @param _amount Amount of LP tokens
-    function depositLP(uint256 _amount) public update {
+    /// @notice Deposit LP tokens to farm pool and receives Gauge tokens instead
+    /// @param _amount Amount of LP tokens
+    function depositLP(uint256 _amount) public update whenNotPaused {
         require(lpBalances[msg.sender] >= _amount, "Not enough LP tokens");
         require(_amount > 0, "Shoud be greater than zero!");
 
@@ -288,12 +310,13 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         emit DepositLP(msg.sender, _amount);
     }
 
-    // @notice Receives LP tokens back instead of Gauge
-    // @param _amount Amount of Gauge tokens
-    // @param _autoWithdraw If true remove all liquidity at the same tx
+    /// @notice Receives LP tokens back instead of Gauge
+    /// @param _amount Amount of Gauge tokens
+    /// @param _autoWithdraw If true remove all liquidity at the same tx
     function withdrawLP(uint256 _amount, bool _autoWithdraw)
         external
         update
+        whenNotPaused
     {
         require(
             gaugeBalances[msg.sender] >= _amount,
@@ -324,7 +347,7 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         emit WithdrawLP(msg.sender, _amount, _autoWithdraw);
     }
 
-    // @notice Collect all rewards by user
+    /// @notice Collect all rewards by user
     function harvestRewards() private {
         uint256 stakedAmount = gaugeBalances[msg.sender];
 
@@ -343,7 +366,7 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         emit HarvestRewards(msg.sender, rewardsToHarvest);
     }
 
-    // @notice Receives portion of total rewards in SRS tokens from the farm contract
+    /// @notice Receives portion of total rewards in SRS tokens from the farm contract
     function updatePoolRewards() private {
         uint256 balBefore = kgl.balanceOf(address(this));
         minter.mint(address(gauge));
@@ -360,6 +383,9 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
             totalStaked;
     }
 
+    /// @notice Converts LP token amount to ASTR and nASTR amounts
+    /// @param _lpAmount LP tokens amount
+    /// @return ASTR, nASTR amounts
     function calculateRemoveLiquidity(uint256 _lpAmount)
         public
         view
@@ -377,8 +403,8 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         return amounts;
     }
 
-    // @notice For claim rewards by users
-    function claim() external update nonReentrant {
+    /// @notice For claim rewards by users
+    function claim() external update nonReentrant whenNotPaused {
         require(rewards[msg.sender] > 0, "User has no any rewards");
         uint256 comissionPart = rewards[msg.sender] / REVENUE_FEE; // 10% comission part which go to revenue pool
         uint256 rewardsToClaim = rewards[msg.sender] - comissionPart;
@@ -388,36 +414,38 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         emit Claim(msg.sender, rewardsToClaim);
     }
 
-    // @notice Needs to check user rewards
-    // @param _user User address
-    // @return sum Amount of penging rewards
-    function pendingRewards(address _user) public view returns (uint256 sum) {
+    /// @notice Get user rewards
+    /// @param _user User address
+    /// @return userRewards Amount of penging rewards
+    function pendingRewards(address _user) public view returns (uint256 userRewards) {
         uint256 stakedAmount = gaugeBalances[_user];
         if (stakedAmount > 0) {
-            sum =
+            userRewards =
                 rewards[_user] +
                 (stakedAmount * accumulatedRewardsPerShare) /
                 REWARDS_PRECISION -
                 rewardDebt[_user];
         } else {
-            sum = rewards[_user];
+            userRewards = rewards[_user];
         }
+        uint256 comissionPart = userRewards / REVENUE_FEE;
+        userRewards -= comissionPart;
     }
 
-    // @notice Get share of n tokens in pool for user
-    // @param _user User's address
+    /// @notice Get share of n tokens in pool for user
+    /// @param _user User's address
     function calc(address _user) public view returns (uint256 nShare) {
         uint256[] memory amounts = new uint256[](2);
         amounts = calculateRemoveLiquidity(lpBalances[_user] + gaugeBalances[_user]);
         nShare = amounts[1];
     }
 
-    // @notice Disabled functionality to renounce ownership
+    /// @notice Disabled functionality to renounce ownership
     function renounceOwnership() public override onlyOwner {
         revert("It is not possible to renounce ownership!");
     }
 
-    // @notice shows total staked astr amount
+    /// @notice shows total staked astr amount
     function totalStakedASTR() public view returns (uint256) {
         uint256[] memory amounts = new uint256[](2);
         uint256 adapterLpBalance = IERC20Upgradeable(lp).balanceOf(address(this));
@@ -425,7 +453,7 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         return amounts[0];
     }
 
-    // @notice update user's nastr balance in AdaptersDistributor
+    /// @notice update user's nastr balance in AdaptersDistributor
     function _updateBalanceInAdaptersDistributor(address _user) private {
         uint256 nastrBalAfter = calc(_user);
         try adaptersDistributor.updateBalanceInAdapter(utilityName, _user, nastrBalAfter) {
@@ -435,13 +463,25 @@ contract KaglaAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         }
     }
 
-    // @notice set adapters distributor by owner
+    /// @notice set adapters distributor by owner
     function setAdaptersDistributor(IAdaptersDistributor _adaptersDistributor) external onlyOwner {
         adaptersDistributor = _adaptersDistributor;
     }
 
-    // @notice set utilityName
+    /// @notice set utilityName
     function setUtilityName(string memory _utilityName) external onlyOwner {
         utilityName = _utilityName;
+    }
+
+    /// @notice Disabling funcs with the whenNotPaused modifier
+    function pause() external onlyManager {
+        _paused = true;
+        emit Paused(msg.sender);
+    }
+
+    /// @notice Enabling funcs with the whenNotPaused modifier
+    function unpause() external onlyManager {
+        _paused = false;
+        emit Unpaused(msg.sender);
     }
 }
