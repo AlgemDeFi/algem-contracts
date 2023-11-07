@@ -47,7 +47,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
     address[] public users;
     mapping(address => bool) public isUser;
 
-    bool private _paused;
+    bool public paused;
 
     //Events
     event AddLiquidity(
@@ -91,7 +91,7 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
 
     /// @notice Modifier to make a function callable only when the contract is not paused
     modifier whenNotPaused() {
-        require(!_paused, "Not available when paused");
+        require(!paused, "Not available when paused");
         _;
     }
 
@@ -564,13 +564,13 @@ contract ArthswapAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable, IPar
 
     /// @notice Disabling funcs with the whenNotPaused modifier
     function pause() external onlyManager {
-        _paused = true;
+        paused = true;
         emit Paused(msg.sender);
     }
 
     /// @notice Enabling funcs with the whenNotPaused modifier
     function unpause() external onlyManager {
-        _paused = false;
+        paused = false;
         emit Unpaused(msg.sender);
     }
 }
