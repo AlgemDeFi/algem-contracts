@@ -43,11 +43,6 @@ contract LiquidStakingMain is AccessControlUpgradeable, LiquidStakingStorage {
         _;
     }
 
-    modifier whenNotPartiallyPaused() {
-        require(!partiallyPaused || hasRole(MANAGER, msg.sender), "Contract partially paused");
-        _;
-    }
-
     // --------------------------------------------------------------------
     // Users functions ----------------------------------------------------
     // --------------------------------------------------------------------
@@ -57,7 +52,6 @@ contract LiquidStakingMain is AccessControlUpgradeable, LiquidStakingStorage {
     /// @param _amounts => amounts of tokens to stake
     function stake(string[] memory _utilities, uint256[] memory _amounts) 
     external payable 
-    whenNotPartiallyPaused
     checkArrays(_utilities, _amounts) 
     updateAll {
         uint256 value = msg.value;
@@ -415,6 +409,12 @@ contract LiquidStakingMain is AccessControlUpgradeable, LiquidStakingStorage {
         partners.push(_partner);
     }
 
+    /// @notice Security update
+    function update() external onlyRole(MANAGER) {
+        // Remove redundant struct
+        delete dapps["Algem"];
+    }
+
     // --------------------------------------------------------------------
     // Management functions // For Distributors contracts -----------------
     // --------------------------------------------------------------------
@@ -447,16 +447,6 @@ contract LiquidStakingMain is AccessControlUpgradeable, LiquidStakingStorage {
         _updateUserBalance(_utility, _user, _amount);
     }
 
-    function partiallyPause() external onlyRole(MANAGER) {
-        require(!partiallyPaused, "Already partially paused");
-        partiallyPaused = true;
-    }
-
-    function partiallyUnpause() external onlyRole(MANAGER) {
-        require(partiallyPaused, "Not partially paused");
-        partiallyPaused = false;
-    }
-
     // --------------------------------------------------------------------
     // Private logic functions // -----------------------------------------
     // --------------------------------------------------------------------
@@ -466,7 +456,6 @@ contract LiquidStakingMain is AccessControlUpgradeable, LiquidStakingStorage {
     /// @param _user => user address
     function _updateUserBalanceInUtility(string memory _utility, address _user) private  {
         require(_user != address(0), "Zero address alarm!");
-        if (keccak256(bytes(_utility)) == keccak256("AdaptersUtility")) return;
         uint256 _amount = distr.getUserDntBalanceInUtil(_user, _utility, DNTname);
         _updateUserBalance(_utility, _user, _amount);
     }
@@ -506,7 +495,7 @@ contract LiquidStakingMain is AccessControlUpgradeable, LiquidStakingStorage {
     /// @param _utilities => utilities from claim
     /// @param _amounts => amounts from claim
     function _claim(string[] memory _utilities, uint256[] memory _amounts) 
-    private whenNotPartiallyPaused {
+    private {
         require(!isPartner[msg.sender], "Claim not allowed for partner pools");
 
         uint256 l = _utilities.length;
