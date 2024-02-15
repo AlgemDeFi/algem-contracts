@@ -67,7 +67,6 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     );
     event SetAbilityToAddLpAndGauge(bool indexed _b);
     event UpdateBalSuccess(address user, string utilityName, uint256 amount);
-    event UpdateBalError(address user, string utilityName, uint256 amount, string reason);
     event Paused(address account);
     event Unpaused(address account);
 
@@ -389,11 +388,8 @@ contract SiriusAdapter is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     // @notice update user's nastr balance in AdaptersDistributor
     function _updateBalanceInAdaptersDistributor(address _user) private {
         uint256 nastrBalAfter = calc(_user);
-        try adaptersDistributor.updateBalanceInAdapter(utilityName, _user, nastrBalAfter) {
-            emit UpdateBalSuccess(_user, utilityName, nastrBalAfter);
-        } catch Error(string memory reason) {
-            emit UpdateBalError(_user, utilityName, nastrBalAfter, reason);
-        }
+        adaptersDistributor.updateBalanceInAdapter(utilityName, _user, nastrBalAfter);
+        emit UpdateBalSuccess(_user, utilityName, nastrBalAfter);
     }
 
     // @notice Needs to check user rewards

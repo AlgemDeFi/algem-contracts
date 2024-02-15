@@ -129,6 +129,7 @@ abstract contract LiquidStakingStorage {
     address public liquidStakingManager;
 
     bool public paused;
+    bool public partiallyPaused;
 
     event Staked(address indexed user, uint val);
     event StakedInUtility(address indexed user, string indexed utility, uint val);

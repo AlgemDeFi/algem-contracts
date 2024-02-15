@@ -1,0 +1,278 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0xe84dbc07e122c882AC5116A9539ec9cFa839c215"
+  },
+  "proxies": [
+    {
+      "address": "0x8d4F87A8f688Af04e9E3023C8846c3f6c64f410e",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "a7c39b4f0618005e7137710f4176953aac3ac846ff83b3d82bbf113b4059c028": {
+      "address": "0xE9F471f95B2Fae5eE56d3f715603Ad293B684dDD",
+      "layout": {
+        "solcVersion": "0.8.4",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "_status",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_uint256",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:38"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:74"
+          },
+          {
+            "label": "pool",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_contract(IKaglaPool)22820",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:19"
+          },
+          {
+            "label": "farm",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_contract(IKaglaFarm)22747",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:20"
+          },
+          {
+            "label": "lp",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_contract(IERC20Upgradeable)1740",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:21"
+          },
+          {
+            "label": "nToken",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_contract(IERC20Upgradeable)1740",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:22"
+          },
+          {
+            "label": "gauge",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_contract(IERC20Upgradeable)1740",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:23"
+          },
+          {
+            "label": "kgl",
+            "offset": 0,
+            "slot": "156",
+            "type": "t_contract(IERC20Upgradeable)1740",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:24"
+          },
+          {
+            "label": "minter",
+            "offset": 0,
+            "slot": "157",
+            "type": "t_contract(IMinter)22977",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:25"
+          },
+          {
+            "label": "accumulatedRewardsPerShare",
+            "offset": 0,
+            "slot": "158",
+            "type": "t_uint256",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:30"
+          },
+          {
+            "label": "revenuePool",
+            "offset": 0,
+            "slot": "159",
+            "type": "t_uint256",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:31"
+          },
+          {
+            "label": "totalStaked",
+            "offset": 0,
+            "slot": "160",
+            "type": "t_uint256",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:32"
+          },
+          {
+            "label": "lpBalances",
+            "offset": 0,
+            "slot": "161",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:34"
+          },
+          {
+            "label": "gaugeBalances",
+            "offset": 0,
+            "slot": "162",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:35"
+          },
+          {
+            "label": "rewards",
+            "offset": 0,
+            "slot": "163",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:36"
+          },
+          {
+            "label": "rewardDebt",
+            "offset": 0,
+            "slot": "164",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:37"
+          },
+          {
+            "label": "abilityToAddLpAndGauge",
+            "offset": 0,
+            "slot": "165",
+            "type": "t_bool",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:39"
+          },
+          {
+            "label": "adaptersDistributor",
+            "offset": 1,
+            "slot": "165",
+            "type": "t_contract(IAdaptersDistributor)22574",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:41"
+          },
+          {
+            "label": "utilityName",
+            "offset": 0,
+            "slot": "166",
+            "type": "t_string_storage",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:42"
+          },
+          {
+            "label": "paused",
+            "offset": 0,
+            "slot": "167",
+            "type": "t_bool",
+            "contract": "KaglaAdapter",
+            "src": "contracts/KaglaAdapter.sol:44"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(IAdaptersDistributor)22574": {
+            "label": "contract IAdaptersDistributor",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IERC20Upgradeable)1740": {
+            "label": "contract IERC20Upgradeable",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IKaglaFarm)22747": {
+            "label": "contract IKaglaFarm",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IKaglaPool)22820": {
+            "label": "contract IKaglaPool",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IMinter)22977": {
+            "label": "contract IMinter",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    }
+  }
+}
