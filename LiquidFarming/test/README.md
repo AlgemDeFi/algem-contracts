@@ -1,0 +1,3 @@
+# Test notes
+There is a Required.t.sol files that defines some stuff for quick access. Also there are few often used helper functions that need to be implemented in each dApp test file.
+Another important thing is funding with pair token. While you always can vm.deal for ETH, mint is not always implemented. So you have to find a "pairwhale", generally 1st address from the "holders" tab at block explorer.

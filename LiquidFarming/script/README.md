@@ -1,0 +1,3 @@
+# Script notes
+Scripts highly rely on vm.prompt to double-check transaction parameters.
+There is also a configuration mechanics: there is a json file for each pair with required addresses. This config is a source of truth for scripts and tests so that you can change the parameter once instead of multiple occasions. Also there are writeConfig() and readConfigs() functions at Workbench.s.sol that allow to read existing config and add new one. Also you can always inherit Workbench.s.sol to use those configs in solidity.

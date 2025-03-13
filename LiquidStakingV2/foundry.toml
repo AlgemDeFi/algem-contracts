@@ -1,0 +1,17 @@
+[profile.default]
+evm_version = "london"
+src = "src"
+out = "out"
+libs = ["lib"]
+
+# See more config options https://github.com/foundry-rs/foundry/tree/master/config
+
+[rpc_endpoints]
+astar = "${ASTAR_RPC_URL}"
+localhost = "${LOCALHOST}"
+sepolia = "${SEPOLIA_RPC_URL}"
+minato = "${MINATO_RPC_URL}"
+
+[fuzz]
+runs = 1000
+
